@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Inner Kingdom — 3D Meet the Characters Inside Your Mind</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --deep-navy: #0a0e1a;
+    --midnight: #0d1425;
+    --amygdala-color: #c2185b;
+    --hippocampus-color: #00acc1;
+    --prefrontal-color: #5c6bc0;
+    --cerebellum-color: #388e3c;
+    --thalamus-color: #f57c00;
+    --hypothalamus-color: #7b1fa2;
+    --broca-color: #0288d1;
+    --corpus-color: #00897b;
+    --insula-color: #e64a19;
+    --brainstem-color: #5d4037;
+    --parietal-color: #1565c0;
+    --occipital-color: #6a1b9a;
+    --temporal-color: #2e7d32;
+    --cingulate-color: #ad1457;
+    --basal-color: #ef6c00;
+    --highlight: #e8d5b7;
+    --text-primary: #e8e4dc;
+    --text-muted: #9a9080;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep-navy);
+    color: var(--text-primary);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(92,107,192,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,172,193,0.07) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(194,24,91,0.06) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .grain {
+    position: fixed; inset: 0; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 24px 36px 0;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+
+  .wordmark-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 400; letter-spacing: 0.02em;
+    color: var(--highlight); line-height: 1.1;
+  }
+  .wordmark-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em;
+    color: var(--text-muted); text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .legend-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 100px; padding: 6px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em;
+    color: var(--text-muted); text-transform: uppercase;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #e8d5b7; animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  .main-grid {
+    position: relative; z-index: 5;
+    display: grid; grid-template-columns: 260px 1fr 340px;
+    height: calc(100vh - 90px);
+    padding: 20px 18px 18px;
+  }
+
+  /* LEFT SIDEBAR */
+  .sidebar-left {
+    padding: 0 16px 0 0; overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .sidebar-section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    color: var(--text-muted); text-transform: uppercase;
+    margin-bottom: 12px; padding-left: 4px;
+  }
+  .region-group { margin-bottom: 20px; }
+  .region-group-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.15em;
+    color: var(--text-muted); text-transform: uppercase;
+    padding: 6px 10px; opacity: 0.6;
+  }
+  .region-btn {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 9px 12px;
+    background: transparent; border: 1px solid transparent;
+    border-radius: 8px; cursor: pointer; transition: all 0.25s ease;
+    text-align: left; margin-bottom: 2px;
+  }
+  .region-btn:hover {
+    background: var(--glass); border-color: var(--glass-border);
+  }
+  .region-btn.active {
+    background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12);
+  }
+  .region-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    flex-shrink: 0; transition: transform 0.2s;
+  }
+  .region-btn:hover .region-dot, .region-btn.active .region-dot {
+    transform: scale(1.4);
+  }
+  .region-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; color: var(--text-primary); line-height: 1.2;
+  }
+  .region-nickname {
+    font-size: 10px; color: var(--text-muted); font-style: italic;
+    display: block; margin-top: 1px;
+  }
+
+  /* CENTER - 3D Canvas */
+  .brain-viewport {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; gap: 12px;
+  }
+  #brain-canvas {
+    width: 100%; height: 100%;
+    max-width: 720px; max-height: 580px;
+    border-radius: 16px;
+    cursor: grab;
+    background: radial-gradient(ellipse at center, rgba(20,28,50,0.4) 0%, rgba(10,14,26,0.0) 70%);
+  }
+  #brain-canvas:active { cursor: grabbing; }
+
+  .canvas-wrap {
+    position: relative; width: 100%; flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 400px;
+  }
+
+  .controls-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+  }
+  .view-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 100px;
+    border: 1px solid var(--glass-border); background: var(--glass);
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .view-btn:hover, .view-btn.active {
+    background: rgba(255,255,255,0.08); color: var(--text-primary);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  /* Loading indicator */
+  .loader {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted); opacity: 0.7;
+  }
+
+  /* 3D hover label */
+  .hover-label {
+    position: absolute; pointer-events: none;
+    background: rgba(10,14,26,0.92); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px; padding: 6px 10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; color: var(--highlight);
+    backdrop-filter: blur(8px);
+    opacity: 0; transition: opacity 0.15s;
+    z-index: 30;
+    white-space: nowrap;
+  }
+  .hover-label.visible { opacity: 1; }
+  .hover-label-sub {
+    display: block; font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.12em;
+    color: var(--text-muted); margin-top: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Hint text */
+  .interaction-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.15em;
+    color: var(--text-muted); text-transform: uppercase;
+    opacity: 0.5; text-align: center;
+  }
+
+  /* Color legend */
+  .color-legend {
+    display: flex; flex-wrap: wrap; gap: 6px 10px;
+    justify-content: center; max-width: 600px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .legend-swatch { width: 7px; height: 7px; border-radius: 2px; }
+
+  /* RIGHT PANEL */
+  .sidebar-right {
+    padding: 0 0 0 20px; overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .detail-empty {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: 60%; text-align: center;
+    gap: 12px; opacity: 0.4;
+  }
+  .detail-empty-icon { font-size: 40px; opacity: 0.5; }
+  .detail-empty-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px; font-style: italic;
+    color: var(--text-muted); line-height: 1.6;
+  }
+  .detail-panel { display: none; animation: fadeSlideIn 0.4s ease; }
+  .detail-panel.visible { display: block; }
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .detail-color-bar {
+    width: 100%; height: 3px; border-radius: 100px; margin-bottom: 18px;
+  }
+  .detail-header { margin-bottom: 16px; }
+  .detail-region-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 400;
+    color: var(--highlight); line-height: 1.1;
+  }
+  .detail-latin {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 13px;
+    color: var(--text-muted); margin-top: 3px;
+  }
+  .detail-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; margin-top: 10px;
+    padding: 5px 10px; border-radius: 4px;
+    display: inline-block; background: rgba(255,255,255,0.05);
+  }
+  .detail-section { margin-bottom: 18px; }
+  .detail-section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-muted);
+    margin-bottom: 7px; opacity: 0.7;
+  }
+  .detail-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px; line-height: 1.75;
+    color: rgba(232,228,220,0.88);
+  }
+  .detail-body strong { font-weight: 600; color: var(--highlight); }
+  .function-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .function-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em;
+    padding: 4px 10px; border-radius: 100px;
+    border: 1px solid; opacity: 0.8;
+  }
+  .adhd-insight {
+    background: rgba(92,107,192,0.08);
+    border: 1px solid rgba(92,107,192,0.2);
+    border-radius: 10px; padding: 14px; margin-top: 4px;
+  }
+  .adhd-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: #9fa8da;
+    margin-bottom: 7px; display: flex; align-items: center; gap: 6px;
+  }
+  .adhd-label::before { content: '◈'; font-size: 10px; }
+  .adhd-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; line-height: 1.7;
+    color: rgba(232,228,220,0.8); font-style: italic;
+  }
+  .divider { height: 1px; background: var(--glass-border); margin: 16px 0; }
+  .connections-visual { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .conn-chip {
+    display: flex; align-items: center; gap: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; padding: 3px 9px; border-radius: 100px;
+    background: var(--glass); border: 1px solid var(--glass-border);
+    color: var(--text-muted); letter-spacing: 0.08em;
+  }
+  .conn-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* Jung section */
+  .jung-section {
+    background: linear-gradient(135deg, rgba(232,213,183,0.05), rgba(232,213,183,0.02));
+    border: 1px solid rgba(232,213,183,0.15);
+    border-radius: 10px; padding: 14px 16px; margin-top: 4px;
+  }
+  .jung-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #e8d5b7; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px; opacity: 0.85;
+  }
+  .jung-label::before { content: '\25C7'; font-size: 11px; }
+  .function-codes { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .function-code {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 18px;
+    padding: 3px 12px; border-radius: 4px; border: 1px solid;
+    color: #e8d5b7; background: rgba(232,213,183,0.06);
+  }
+  .jung-function-row {
+    margin-bottom: 12px; padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(232,213,183,0.1);
+  }
+  .jung-function-row:last-of-type { border-bottom: none; padding-bottom: 0; }
+  .jung-function-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: #e8d5b7; margin-bottom: 4px;
+  }
+  .jung-function-name em {
+    font-style: italic; opacity: 0.7; font-size: 12px; margin-left: 4px;
+  }
+  .jung-function-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13.5px; line-height: 1.6;
+    color: rgba(232,228,220,0.85);
+  }
+  .jung-types-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .jung-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em;
+    padding: 2px 7px; border-radius: 3px;
+    background: rgba(232,213,183,0.08);
+    color: #e8d5b7; border: 1px solid rgba(232,213,183,0.15);
+  }
+  .jung-caveat {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 12px; line-height: 1.55;
+    color: var(--text-muted); margin-top: 12px;
+    padding-top: 10px; border-top: 1px dashed rgba(232,213,183,0.12);
+    opacity: 0.85;
+  }
+
+  /* Mobile */
+  @media (max-width: 1024px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
+      height: auto; padding: 16px;
+    }
+    .sidebar-left {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 4px; padding: 0 0 12px 0; overflow: visible;
+    }
+    .region-group { margin: 0; }
+    .region-group-title { display: none; }
+    .sidebar-right { padding: 12px 0 80px; }
+    .canvas-wrap { min-height: 380px; }
+  }
+  @media (max-width: 600px) {
+    header { padding: 16px 14px 0; }
+    .main-grid { padding: 12px; }
+  }
+
+
+  /* Stories-specific styling */
+  .character-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .character-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+  .character-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 400; font-style: italic;
+    color: var(--highlight); line-height: 1;
+  }
+  .character-role {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.15em;
+    text-transform: uppercase; opacity: 0.7;
+    margin-top: 4px;
+  }
+  .character-also {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; color: var(--text-muted);
+    font-style: italic; margin-top: 4px;
+  }
+  .opening-line {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-style: italic;
+    line-height: 1.5; color: var(--highlight);
+    margin: 14px 0 0 0; padding-left: 12px;
+    border-left: 2px solid;
+    opacity: 0.95;
+  }
+  .detail-section-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 16px;
+    color: var(--highlight); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .detail-section-title::before {
+    content: ''; width: 18px; height: 1px;
+    background: currentColor; opacity: 0.5;
+  }
+  .core-functions-list {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 4px;
+  }
+  .function-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 10px; background: rgba(255,255,255,0.02);
+    border-radius: 6px; border-left: 2px solid;
+  }
+  .function-marker {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em;
+    opacity: 0.7; min-width: 18px; padding-top: 1px;
+  }
+  .function-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px; line-height: 1.5;
+    color: rgba(232,228,220,0.92);
+  }
+  .function-text strong {
+    color: var(--highlight); font-weight: 600;
+  }
+  .everyday-moment {
+    background: rgba(232,213,183,0.05);
+    border: 1px solid rgba(232,213,183,0.15);
+    border-radius: 10px;
+    padding: 14px 16px; margin-top: 4px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px; line-height: 1.7;
+    color: rgba(232,228,220,0.92);
+  }
+  .everyday-label {
+    font-family: 'Space Mono', monospace;
+    font-style: normal;
+    font-size: 8px; letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--highlight); opacity: 0.7;
+    display: block; margin-bottom: 6px;
+  }
+  .friends-list {
+    display: flex; flex-direction: column; gap: 6px; margin-top: 4px;
+  }
+  .friend-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+  }
+  .friend-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .friend-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 13px;
+    color: var(--text-primary);
+  }
+  .friend-bond {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; color: var(--text-muted);
+    margin-left: auto; font-style: italic;
+  }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header>
+  <div>
+    <div class="wordmark-title" style="font-style:italic;">The Inner Kingdom</div>
+    <div class="wordmark-sub">Meet the Characters Inside Your Mind · 3D</div>
+  </div>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <div class="legend-pill">
+      <div class="pulse-dot"></div>
+      15 Characters · Drag to Rotate
+    </div>
+    <div class="legend-pill" style="border-color: rgba(232,213,183,0.3); color: rgba(232,213,183,0.85);">
+      A Story in Every Region
+    </div>
+  </div>
+</header>
+
+<div class="main-grid">
+
+  <!-- LEFT: Region Navigator -->
+  <div class="sidebar-left">
+    <div class="sidebar-section-label">The Cast</div>
+
+    <div class="region-group">
+      <div class="region-group-title">— The Feeling Court</div>
+      <button class="region-btn" onclick="selectRegion('amygdala')" id="btn-amygdala">
+        <div class="region-dot" style="background:var(--amygdala-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Sentinel</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Amygdala</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('hippocampus')" id="btn-hippocampus">
+        <div class="region-dot" style="background:var(--hippocampus-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Archivist</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Hippocampus</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('hypothalamus')" id="btn-hypothalamus">
+        <div class="region-dot" style="background:var(--hypothalamus-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Regulator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Hypothalamus</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('cingulate')" id="btn-cingulate">
+        <div class="region-dot" style="background:var(--cingulate-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Mediator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Cingulate Cortex</span></div>
+      </button>
+    </div>
+
+    <div class="region-group">
+      <div class="region-group-title">— The Thinking Realm</div>
+      <button class="region-btn" onclick="selectRegion('prefrontal')" id="btn-prefrontal">
+        <div class="region-dot" style="background:var(--prefrontal-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Commander</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Prefrontal Cortex</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('parietal')" id="btn-parietal">
+        <div class="region-dot" style="background:var(--parietal-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Navigator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Parietal Lobe</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('occipital')" id="btn-occipital">
+        <div class="region-dot" style="background:var(--occipital-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Cinema</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Occipital Lobe</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('temporal')" id="btn-temporal">
+        <div class="region-dot" style="background:var(--temporal-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Interpreter</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Temporal Lobe</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('insula')" id="btn-insula">
+        <div class="region-dot" style="background:var(--insula-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Body-Reader</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Insula</span></div>
+      </button>
+    </div>
+
+    <div class="region-group">
+      <div class="region-group-title">— The Deep Chambers</div>
+      <button class="region-btn" onclick="selectRegion('thalamus')" id="btn-thalamus">
+        <div class="region-dot" style="background:var(--thalamus-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Relay</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Thalamus</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('basal')" id="btn-basal">
+        <div class="region-dot" style="background:var(--basal-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Habit Forge</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Basal Ganglia</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('corpus')" id="btn-corpus">
+        <div class="region-dot" style="background:var(--corpus-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Bridge</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Corpus Callosum</span></div>
+      </button>
+    </div>
+
+    <div class="region-group">
+      <div class="region-group-title">— The Working Hands</div>
+      <button class="region-btn" onclick="selectRegion('broca')" id="btn-broca">
+        <div class="region-dot" style="background:var(--broca-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Speaker</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Broca's Area</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('cerebellum')" id="btn-cerebellum">
+        <div class="region-dot" style="background:var(--cerebellum-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Choreographer</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Cerebellum</span></div>
+      </button>
+      <button class="region-btn" onclick="selectRegion('brainstem')" id="btn-brainstem">
+        <div class="region-dot" style="background:var(--brainstem-color)"></div>
+        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Ancient Core</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Brainstem</span></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- CENTER: 3D Canvas -->
+  <div class="brain-viewport">
+    <div class="controls-bar">
+      <button class="view-btn active" onclick="setView('default')">Free Rotate</button>
+      <button class="view-btn" onclick="setView('lateral')">From the Side</button>
+      <button class="view-btn" onclick="setView('medial')">From Within</button>
+      <button class="view-btn" onclick="setView('superior')">From Above</button>
+      <button class="view-btn" onclick="setView('anterior')">From the Front</button>
+      <button class="view-btn" onclick="toggleTransparency()" id="transparency-btn">Outer Layers: Solid</button>
+      <button class="view-btn" onclick="toggleAutoRotate()" id="autorotate-btn">Auto-Rotate: Off</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <div class="loader" id="loader">Initializing 3D scene...</div>
+      <canvas id="brain-canvas"></canvas>
+      <div class="hover-label" id="hover-label">
+        <span id="hover-name"></span>
+        <span class="hover-label-sub" id="hover-sub"></span>
+      </div>
+    </div>
+
+    <div class="interaction-hint">Drag to rotate · Scroll to zoom · Click any character</div>
+
+    <div class="color-legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:#c2185b"></div>Feeling</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#00acc1"></div>Memory</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#5c6bc0"></div>Thinking</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#388e3c"></div>Movement</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#f57c00"></div>Connecting</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#7b1fa2"></div>Caring</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#6a1b9a"></div>Seeing</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Detail Panel -->
+  <div class="sidebar-right" id="detail-container">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-icon">◎</div>
+      <div class="detail-empty-text">Choose a character from the cast, or click anywhere on the brain, to hear their story.</div>
+    </div>
+    <div class="detail-panel" id="detail-panel"></div>
+  </div>
+
+</div>
+
+<!-- Three.js via import map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ============================================
+// REGION DATA (full PhD content from v2)
+// ============================================
+const REGIONS = {
+  amygdala: {
+    name: "The Sentinel", realName: "Amygdala",
+    role: "Guardian of the Inner Kingdom",
+    also: "shaped like an almond, deep in the temple of memory",
+    color: "#c2185b", nickname: "The Sentinel",
+    tagline: "Watches for danger",
+    opening: "She never sleeps. Long before you knew there was a world, the Sentinel was already standing at the gate, listening.",
+    story: `The Sentinel is your brain's <strong>oldest guard</strong>, an almond-shaped watcher who lives deep inside the temple of memory. Her job is to keep you alive. Every second of every day, she scans your surroundings for anything that might be a threat.<br><br>She moves faster than thought itself. When a dog barks behind you, your heart pounds <em>before</em> you even realize what you heard. That was the Sentinel, pulling the alarm. She would rather be wrong a hundred times than miss the one moment that mattered.<br><br>She remembers every scare you've ever had. She does not forget. This is how she protects you, but it is also why old fears can return so strongly when something today reminds her of something long ago.`,
+    functions: [
+      { label: "I.", text: "She raises the alarm when she senses <strong>danger</strong>, real or remembered." },
+      { label: "II.", text: "She tags every memory with how it <strong>felt</strong>, so you know what to avoid later." },
+      { label: "III.", text: "She reads faces and voices, asking always: <strong>are you safe with this person?</strong>" }
+    ],
+    everyday: "When your heart races during a scary movie, when you suddenly feel hurt by a friend's comment, when you sense something is off but cannot say why, the Sentinel is the one whispering: <em>pay attention</em>.",
+    friends: [
+      { name: "The Archivist", color: "#00acc1", bond: "shares her memories" },
+      { name: "The Commander", color: "#5c6bc0", bond: "calms her down" },
+      { name: "The Regulator", color: "#7b1fa2", bond: "answers her alarms" }
+    ]
+  },
+  hippocampus: {
+    name: "The Archivist", realName: "Hippocampus",
+    role: "Keeper of the Library of You",
+    also: "curled like a seahorse, holding every story you've ever lived",
+    color: "#00acc1", nickname: "The Archivist",
+    tagline: "Saves your memories",
+    opening: "Every moment you want to keep, every story worth remembering, must pass through the Archivist's hands.",
+    story: `The Archivist sits quietly in the library of your mind, curled like a tiny seahorse, surrounded by every story you've ever lived. He decides which moments get saved as memories and which fade away by sunset.<br><br>He also draws <strong>maps</strong>. He remembers the layout of your kitchen, the path to your best friend's house, the way the wind smells before a storm. Place and memory are stored together in his library, which is why a song or a smell can suddenly bring back a whole summer.<br><br>He works best when you have <strong>slept well, moved your body, and felt calm</strong>. When stress is too loud, the Archivist cannot hear which memories to save. This is why hard days can feel like a blur.`,
+    functions: [
+      { label: "I.", text: "He turns experiences into <strong>long-lasting memories</strong>." },
+      { label: "II.", text: "He builds <strong>mental maps</strong> of every place you go." },
+      { label: "III.", text: "He helps you find the right memory at the right moment." }
+    ],
+    everyday: "When you walk into your old elementary school and a flood of feelings comes back, when you remember exactly where you sat on the first day of a hard year, the Archivist is the one who saved those pages.",
+    friends: [
+      { name: "The Sentinel", color: "#c2185b", bond: "marks emotional memories" },
+      { name: "The Commander", color: "#5c6bc0", bond: "asks for memories" },
+      { name: "The Relay", color: "#f57c00", bond: "delivers fresh experiences" }
+    ]
+  },
+  prefrontal: {
+    name: "The Commander", realName: "Prefrontal Cortex",
+    role: "Captain of Choices",
+    also: "wearing the crown just behind your forehead",
+    color: "#5c6bc0", nickname: "The Commander",
+    tagline: "Plans and decides",
+    opening: "She does not move quickly. She thinks first, weighs the cost, then chooses.",
+    story: `The Commander stands behind your forehead, wearing the crown of the brain. She is the part of you that <strong>pauses before reacting</strong>. The part that says, <em>wait, let me think this through.</em> She is the captain of your choices.<br><br>She is also the slowest part of you to grow up. The Commander is not fully ready until you are around <strong>twenty-five years old</strong>. This is why teenagers and young adults sometimes make decisions that later make no sense to them. The Commander was still in training.<br><br>She holds your goals, your plans, your sense of who you want to become. When the Sentinel sounds an alarm, the Commander is the one who decides whether to run, stay, or speak up. She is what makes you <strong>you</strong>.`,
+    functions: [
+      { label: "I.", text: "She makes <strong>decisions</strong> after weighing different choices." },
+      { label: "II.", text: "She holds <strong>plans and goals</strong> in mind while you work toward them." },
+      { label: "III.", text: "She tells the Sentinel when an alarm is a <strong>false one</strong>." }
+    ],
+    everyday: "When you choose to study instead of scroll, when you stop yourself from saying something you'd regret, when you imagine your life five years from now, the Commander is doing her quiet, careful work.",
+    friends: [
+      { name: "The Sentinel", color: "#c2185b", bond: "asks her to settle" },
+      { name: "The Archivist", color: "#00acc1", bond: "supplies her with memories" },
+      { name: "The Habit Forge", color: "#ef6c00", bond: "competes for control" }
+    ]
+  },
+  cerebellum: {
+    name: "The Choreographer", realName: "Cerebellum",
+    role: "Dancer at the Back of the Mind",
+    also: "more neurons than the rest of the brain combined, hidden behind the skull",
+    color: "#388e3c", nickname: "The Choreographer",
+    tagline: "Moves you with grace",
+    opening: "She does not announce herself. But every smooth step, every caught ball, every steady hand belongs to her.",
+    story: `The Choreographer lives at the back of your skull, small but mighty. She holds <strong>more brain cells than the rest of the brain combined</strong>. Every movement you make, she rehearses a split-second before it happens.<br><br>When you reach for a glass of water without spilling it, she is the reason. When you learn to ride a bike or play an instrument, you are <strong>handing the movements over to her</strong> so your Commander does not have to think about them anymore. This is why riding a bike comes back so easily, even after years.<br><br>She also feels time. The pause between two notes, the rhythm of a song, the sense that five minutes have passed, all of this is the Choreographer keeping count in the back of the mind.`,
+    functions: [
+      { label: "I.", text: "She fine-tunes every <strong>movement</strong> so it lands the way you intend." },
+      { label: "II.", text: "She stores <strong>learned skills</strong> like riding, swimming, typing." },
+      { label: "III.", text: "She keeps <strong>time</strong> and rhythm in your body and mind." }
+    ],
+    everyday: "When you catch a falling phone, when your fingers find the right piano keys without looking, when you feel a song's beat before the next note plays, the Choreographer is dancing inside you.",
+    friends: [
+      { name: "The Relay", color: "#f57c00", bond: "sends her signals" },
+      { name: "The Ancient Core", color: "#5d4037", bond: "shares the deep work" },
+      { name: "The Habit Forge", color: "#ef6c00", bond: "trades skills back and forth" }
+    ]
+  },
+  thalamus: {
+    name: "The Relay", realName: "Thalamus",
+    role: "Messenger at the Center",
+    also: "the size of a walnut, sitting at the heart of the brain",
+    color: "#f57c00", nickname: "The Relay",
+    tagline: "Sends messages everywhere",
+    opening: "Before you see, hear, or feel anything, the Relay has already decided who gets the message first.",
+    story: `The Relay sits at the very center of your brain, a walnut-sized messenger who never rests. Every sight your eyes catch, every sound your ears pick up, every touch your skin notices, comes through her station before reaching the part of you that says <em>I noticed that.</em><br><br>She is the <strong>great connector</strong>. She knows which messages should go to the Cinema (vision), which should go to the Interpreter (sound and language), and which should be passed to the Commander for a decision.<br><br>She also helps decide whether you are awake or asleep. When she quiets down at night, your conscious mind goes with her. When she stirs in the morning, the world rushes back in.`,
+    functions: [
+      { label: "I.", text: "She <strong>routes</strong> every sense to the right part of the brain." },
+      { label: "II.", text: "She helps you stay <strong>awake</strong>, alert, and aware." },
+      { label: "III.", text: "She <strong>filters</strong> out signals that don't matter right now." }
+    ],
+    everyday: "When you suddenly notice the ticking clock you'd been ignoring, when you tune out a noisy classroom to focus on a friend, the Relay is the one turning dials behind the scenes.",
+    friends: [
+      { name: "The Commander", color: "#5c6bc0", bond: "sends her important news" },
+      { name: "The Sentinel", color: "#c2185b", bond: "gets fast warnings" },
+      { name: "The Ancient Core", color: "#5d4037", bond: "shares the night shift" }
+    ]
+  },
+  hypothalamus: {
+    name: "The Regulator", realName: "Hypothalamus",
+    role: "Keeper of the Body's Balance",
+    also: "smaller than a grape, but powerful beyond its size",
+    color: "#7b1fa2", nickname: "The Regulator",
+    tagline: "Keeps your body steady",
+    opening: "She works without thanks. Quiet, constant, holding the body in balance while you go about your day.",
+    story: `The Regulator is tiny, smaller than a grape, but she is one of the most powerful characters in the kingdom. She keeps your <strong>body temperature steady</strong>, your hunger and thirst signals working, your sleep cycles turning, and your heart steady in the storm.<br><br>She is the bridge between your brain and the rest of your body. When the Sentinel sounds an alarm, the Regulator is the one who actually <strong>floods your body with the energy</strong> to run, fight, or freeze. She speaks the language of hormones, the chemical messengers that travel through your blood.<br><br>She also runs your <strong>inner clock</strong>. The reason you get sleepy at night and hungry around noon is the Regulator, working in the background, keeping time with the sun.`,
+    functions: [
+      { label: "I.", text: "She holds <strong>body temperature, hunger, and thirst</strong> in balance." },
+      { label: "II.", text: "She turns the <strong>stress response</strong> on and off." },
+      { label: "III.", text: "She runs your <strong>sleep clock</strong>, telling you when to rest and when to wake." }
+    ],
+    everyday: "When your stomach growls before lunch, when you start shivering when it's cold, when you suddenly feel sleepy at the end of a long day, the Regulator is doing her quiet work.",
+    friends: [
+      { name: "The Sentinel", color: "#c2185b", bond: "passes her urgent signals" },
+      { name: "The Relay", color: "#f57c00", bond: "shares deep brain space" },
+      { name: "The Ancient Core", color: "#5d4037", bond: "works alongside her" }
+    ]
+  },
+  broca: {
+    name: "The Speaker", realName: "Broca's Area",
+    role: "Voice of the Inner Kingdom",
+    also: "named for the doctor who found him in 1861",
+    color: "#0288d1", nickname: "The Speaker",
+    tagline: "Turns thoughts into words",
+    opening: "He stands at the edge of the frontal lobe, weaving thoughts into sentences before they leave your lips.",
+    story: `The Speaker is the part of you that <strong>turns thoughts into words</strong>. When you have an idea and your mouth opens to share it, he is the one stitching the sentence together, choosing each word and putting them in the right order.<br><br>He was discovered in 1861 by a French doctor named Paul Broca, who met a patient who could understand everything said to him but could only say one word in reply. The doctor realized this small region of the brain held the key to <strong>spoken language</strong>.<br><br>He is also why writing can sometimes feel easier than speaking. The Speaker can get backed up under pressure. When the right word will not come, he is searching the shelves but the door is jammed.`,
+    functions: [
+      { label: "I.", text: "He builds <strong>sentences</strong> from thoughts." },
+      { label: "II.", text: "He arranges words in the right <strong>grammar and order</strong>." },
+      { label: "III.", text: "He works closely with your <strong>writing</strong>, not just your speech." }
+    ],
+    everyday: "When the right word finally comes after a moment of searching, when you suddenly find the perfect way to explain something, the Speaker has done his work and opened the door.",
+    friends: [
+      { name: "The Interpreter", color: "#2e7d32", bond: "shares the language work" },
+      { name: "The Commander", color: "#5c6bc0", bond: "tells him what to say" },
+      { name: "The Choreographer", color: "#388e3c", bond: "helps move the mouth" }
+    ]
+  },
+  corpus: {
+    name: "The Bridge", realName: "Corpus Callosum",
+    role: "Highway Between Two Worlds",
+    also: "two hundred million tiny fibers stretched across the brain",
+    color: "#00897b", nickname: "The Bridge",
+    tagline: "Connects left and right",
+    opening: "Your brain has two halves. Without the Bridge, they would live alone, never knowing the other was there.",
+    story: `The Bridge is made of <strong>two hundred million tiny fibers</strong>, arching from one side of the brain to the other. It is the great highway between the left half and the right half. Without it, the two sides could not share what they know.<br><br>The left side is the logical, language-loving half. The right side is the creative, big-picture half. The Bridge is what allows them to <strong>work together</strong>, what allows you to feel a song with the right side while singing the lyrics with the left.<br><br>When scientists have studied people whose Bridge was damaged or surgically separated, something strange happened. The two halves of their brain developed <strong>different opinions</strong>, sometimes about the same question. This is how important the Bridge truly is.`,
+    functions: [
+      { label: "I.", text: "He carries messages between the <strong>left and right hemispheres</strong>." },
+      { label: "II.", text: "He helps the two sides <strong>work as one</strong>." },
+      { label: "III.", text: "He allows your <strong>logical and creative</strong> mind to speak the same language." }
+    ],
+    everyday: "When you sing along to a song while also feeling the emotion behind it, when you solve a math problem and admire the elegance at the same time, the Bridge is carrying the conversation.",
+    friends: [
+      { name: "The Commander", color: "#5c6bc0", bond: "uses the Bridge daily" },
+      { name: "The Navigator", color: "#1565c0", bond: "connects across him" },
+      { name: "The Cinema", color: "#6a1b9a", bond: "shares left and right views" }
+    ]
+  },
+  insula: {
+    name: "The Body-Reader", realName: "Insula",
+    role: "Listener of the Inside",
+    also: "hidden island of cortex, folded out of sight",
+    color: "#e64a19", nickname: "The Body-Reader",
+    tagline: "Feels what your body feels",
+    opening: "She listens to a quieter conversation, the one your body is always having with itself.",
+    story: `The Body-Reader is hidden, tucked deep inside a fold of the brain like a <strong>secret island</strong>. While the rest of the brain is busy with the outside world, she listens inward. She feels your heartbeat. She knows when you're hungry, full, tired, sick, or about to cry.<br><br>She is also the home of <strong>empathy</strong>. When you watch a friend get hurt and feel a flinch in your own body, that is the Body-Reader firing as if it were happening to you. She helps you understand what others are feeling by translating it through your own physical sensations.<br><br>For some people, her signals come in clearly. For others, they arrive quietly or all at once. There is no wrong way to feel. The Body-Reader can be <strong>trained</strong>, slowly, to listen more closely.`,
+    functions: [
+      { label: "I.", text: "She tells you what your <strong>body</strong> is feeling on the inside." },
+      { label: "II.", text: "She helps you feel <strong>empathy</strong> for others." },
+      { label: "III.", text: "She processes <strong>physical sensations</strong> like pain, taste, and disgust." }
+    ],
+    everyday: "When your stomach tightens before a hard conversation, when you tear up watching someone else cry, when you suddenly realize you're starving, the Body-Reader is the one delivering the message.",
+    friends: [
+      { name: "The Sentinel", color: "#c2185b", bond: "shares emotional signals" },
+      { name: "The Mediator", color: "#ad1457", bond: "watches inside with her" },
+      { name: "The Interpreter", color: "#2e7d32", bond: "translates feeling into meaning" }
+    ]
+  },
+  brainstem: {
+    name: "The Ancient Core", realName: "Brainstem",
+    role: "Oldest Worker of the Kingdom",
+    also: "the deepest, oldest part of the brain, connecting it to the body",
+    color: "#5d4037", nickname: "The Ancient Core",
+    tagline: "Keeps you alive without trying",
+    opening: "He was here first. Before language, before memory, before you had a name. He was running the breath of life.",
+    story: `The Ancient Core is the oldest part of your brain, the part you share with reptiles and birds and almost every animal alive. He does the work you never have to think about: <strong>breathing, heartbeat, blood pressure, swallowing, waking, sleeping</strong>.<br><br>He sits at the very bottom of the brain, where it connects to your spine. He is the bridge between your thinking mind and your living body. Every signal that travels between brain and body passes through him.<br><br>He also runs the <strong>dial that decides how alert you are</strong>. When you wake up slowly in the morning or feel your eyelids getting heavy at night, the Ancient Core is turning a knob, raising or lowering the volume of your awareness.`,
+    functions: [
+      { label: "I.", text: "He runs your <strong>breathing, heartbeat,</strong> and other automatic life functions." },
+      { label: "II.", text: "He controls how <strong>awake or sleepy</strong> you feel." },
+      { label: "III.", text: "He is the <strong>passageway</strong> between your brain and your body." }
+    ],
+    everyday: "When you stay alive through a deep sleep, when you wake up before the alarm, when caffeine makes you feel sharp, the Ancient Core is the one quietly answering.",
+    friends: [
+      { name: "The Relay", color: "#f57c00", bond: "passes his signals up" },
+      { name: "The Choreographer", color: "#388e3c", bond: "works with him on movement" },
+      { name: "The Regulator", color: "#7b1fa2", bond: "shares the body's care" }
+    ]
+  },
+  parietal: {
+    name: "The Navigator", realName: "Parietal Lobe",
+    role: "Mapmaker of Space",
+    also: "the wall of the brain that watches the world's shape",
+    color: "#1565c0", nickname: "The Navigator",
+    tagline: "Knows where everything is",
+    opening: "She holds the map of the world and the map of you inside it.",
+    story: `The Navigator sits on top and toward the back of your brain. Her work is to know <strong>where everything is</strong>, including where your own body is in space. When you reach for something with your eyes closed and your hand lands exactly where you wanted, she made that possible.<br><br>She also gathers information from <strong>all your senses</strong> and weaves it together. Touch, sight, sound, the position of your limbs, all of it becomes one clear picture of <em>here I am, in this place, right now</em>.<br><br>She helps with <strong>math, reading maps, and understanding shapes</strong>. When you mentally rotate a puzzle piece to see if it fits, or imagine walking through your house in your mind, the Navigator is drawing the path.`,
+    functions: [
+      { label: "I.", text: "She knows where your <strong>body</strong> is in space without looking." },
+      { label: "II.", text: "She combines <strong>all your senses</strong> into one experience." },
+      { label: "III.", text: "She helps with <strong>shapes, maps, and math</strong>." }
+    ],
+    everyday: "When you walk through a dark room without bumping into furniture, when you turn a Tetris piece in your mind, when you find your way home without thinking, the Navigator is leading.",
+    friends: [
+      { name: "The Cinema", color: "#6a1b9a", bond: "uses what she sees" },
+      { name: "The Interpreter", color: "#2e7d32", bond: "shares sensory work" },
+      { name: "The Commander", color: "#5c6bc0", bond: "asks her for directions" }
+    ]
+  },
+  occipital: {
+    name: "The Cinema", realName: "Occipital Lobe",
+    role: "Painter of Everything You See",
+    also: "the entire back of the brain devoted to vision",
+    color: "#6a1b9a", nickname: "The Cinema",
+    tagline: "Builds the world you see",
+    opening: "The world out there is light and shadow. The Cinema is the one who turns it into a picture.",
+    story: `The Cinema is the entire back of your brain, devoted to <strong>only one job: seeing</strong>. When light enters your eyes, it is just raw signal. Useless. The Cinema is the one who takes those signals and <strong>builds the image</strong> you actually see, complete with color, depth, motion, and meaning.<br><br>She does her work in layers. One layer notices edges. Another notices color. Another notices motion. Another stitches them together. Another recognizes faces. By the time you "see" your best friend across the room, the Cinema has done <strong>more work in a fraction of a second</strong> than a movie studio does in a year.<br><br>She is the reason that closing your eyes and imagining something can feel almost real. She paints inner pictures as easily as outer ones.`,
+    functions: [
+      { label: "I.", text: "She turns raw light into the <strong>world you see</strong>." },
+      { label: "II.", text: "She recognizes <strong>colors, shapes, faces, and motion</strong>." },
+      { label: "III.", text: "She paints <strong>imagined pictures</strong> when you close your eyes." }
+    ],
+    everyday: "When you spot your friend in a crowd, when a sunset takes your breath away, when you remember someone's face perfectly, the Cinema is showing her work.",
+    friends: [
+      { name: "The Navigator", color: "#1565c0", bond: "tells her where things are" },
+      { name: "The Interpreter", color: "#2e7d32", bond: "names what she sees" },
+      { name: "The Relay", color: "#f57c00", bond: "delivers her raw light signals" }
+    ]
+  },
+  temporal: {
+    name: "The Interpreter", realName: "Temporal Lobe",
+    role: "Translator of Meaning",
+    also: "stretching along the side of the brain, near the temples",
+    color: "#2e7d32", nickname: "The Interpreter",
+    tagline: "Understands what things mean",
+    opening: "He stands between the sounds of the world and the meaning they carry. Without him, language would be noise.",
+    story: `The Interpreter is the part of you that <strong>understands what things mean</strong>. He recognizes voices, faces, songs, and words. He turns sound into language and sights into named things.<br><br>When someone speaks to you, the words enter as sound. The Interpreter is the one who <strong>understands</strong> them, who knows that "apple" means a round red fruit. He is also why you can recognize a song after only two notes, why a face in a crowd suddenly feels familiar, why a smell from your childhood can bring everything back at once.<br><br>He works closely with the Archivist, since meaning and memory are deeply intertwined. He is also the home of much of what we call <strong>social understanding</strong>, recognizing tone of voice, reading what someone really means under their words.`,
+    functions: [
+      { label: "I.", text: "He <strong>understands</strong> language, voices, and music." },
+      { label: "II.", text: "He recognizes <strong>faces and familiar things</strong>." },
+      { label: "III.", text: "He picks up on <strong>tone</strong>, mood, and what someone really means." }
+    ],
+    everyday: "When you hear a song after years and the words come back, when you recognize a friend's voice on the phone before they say their name, the Interpreter is the one connecting sound to meaning.",
+    friends: [
+      { name: "The Archivist", color: "#00acc1", bond: "shares the library" },
+      { name: "The Speaker", color: "#0288d1", bond: "trades language work" },
+      { name: "The Sentinel", color: "#c2185b", bond: "warns of tone shifts" }
+    ]
+  },
+  cingulate: {
+    name: "The Mediator", realName: "Cingulate Cortex",
+    role: "Watcher of the Inner Tug-of-War",
+    also: "a belt of cortex arched over the bridge",
+    color: "#ad1457", nickname: "The Mediator",
+    tagline: "Notices when you're conflicted",
+    opening: "She lives where two paths meet inside you, watching for the moment you must choose.",
+    story: `The Mediator lives in the middle of your brain, arched like a belt over the Bridge. Her job is to <strong>notice when two parts of you disagree</strong>. When you want to eat the cookie but also want to wait until after dinner, she is the one feeling the tension.<br><br>She is also deeply involved in feeling <strong>emotional pain</strong>, including the pain of being left out, ignored, or rejected. Scientists discovered that the same area of the brain that lights up when you stub your toe also lights up when you feel socially hurt. <em>Rejection actually hurts</em>, and the Mediator is one of the reasons why.<br><br>She helps you <strong>care about what is right</strong>. When you feel that twinge of "I shouldn't have done that," she is the one whispering it.`,
+    functions: [
+      { label: "I.", text: "She notices when two parts of you are in <strong>conflict</strong>." },
+      { label: "II.", text: "She processes <strong>emotional pain</strong> like rejection or guilt." },
+      { label: "III.", text: "She helps you <strong>care</strong> about right and wrong." }
+    ],
+    everyday: "When you feel torn between two choices, when being left out actually feels like a physical ache, when your conscience speaks up, the Mediator is at work.",
+    friends: [
+      { name: "The Commander", color: "#5c6bc0", bond: "delivers her concerns" },
+      { name: "The Sentinel", color: "#c2185b", bond: "shares the alarm system" },
+      { name: "The Body-Reader", color: "#e64a19", bond: "watches inside together" }
+    ]
+  },
+  basal: {
+    name: "The Habit Forge", realName: "Basal Ganglia",
+    role: "Maker of Patterns and Habits",
+    also: "a cluster of nuclei buried deep, never resting",
+    color: "#ef6c00", nickname: "The Habit Forge",
+    tagline: "Builds your habits",
+    opening: "He repeats. And repeats. And repeats. Until the thing you once had to think about becomes who you are.",
+    story: `The Habit Forge is a cluster of busy workers deep in the brain. His job is to take <strong>repeated behaviors</strong> and turn them into automatic habits. Brushing your teeth, tying your shoes, scrolling your phone, all of it lives here once it's been repeated enough times.<br><br>He is also the part of you that <strong>feels reward</strong>. When something feels good, when you want to do it again, he is the one releasing the chemical called dopamine, the brain's signal that says <em>this matters, do it again.</em><br><br>This is why habits can be so hard to break. The Habit Forge has spent years rehearsing them. Building new habits is also slow at first, because he has to <strong>learn the new pattern</strong> from scratch. But once a habit is forged, it is almost free to run.`,
+    functions: [
+      { label: "I.", text: "He turns repeated actions into <strong>habits</strong>." },
+      { label: "II.", text: "He delivers <strong>rewards</strong> when something feels good." },
+      { label: "III.", text: "He helps you <strong>start</strong> movements and actions." }
+    ],
+    everyday: "When you find yourself reaching for your phone before you even realize it, when a new habit finally feels easy, when you crave something you've enjoyed before, the Habit Forge is the one keeping the pattern alive.",
+    friends: [
+      { name: "The Commander", color: "#5c6bc0", bond: "negotiates with him" },
+      { name: "The Relay", color: "#f57c00", bond: "passes signals to him" },
+      { name: "The Choreographer", color: "#388e3c", bond: "shares movement skills" }
+    ]
+  }
+};
+
+// ============================================
+// 3D SCENE SETUP
+// ============================================
+const canvas = document.getElementById('brain-canvas');
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+camera.position.set(0, 0, 18);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+  antialias: true,
+  alpha: true
+});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+function resizeRenderer() {
+  const wrap = canvas.parentElement;
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+scene.add(ambientLight);
+
+const keyLight = new THREE.DirectionalLight(0xfff8e8, 0.9);
+keyLight.position.set(5, 8, 6);
+scene.add(keyLight);
+
+const fillLight = new THREE.DirectionalLight(0x8090c0, 0.4);
+fillLight.position.set(-6, -3, 4);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xc2185b, 0.25);
+rimLight.position.set(0, 2, -8);
+scene.add(rimLight);
+
+// OrbitControls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 6;
+controls.maxDistance = 35;
+controls.autoRotate = false;
+controls.autoRotateSpeed = 0.6;
+
+// ============================================
+// SCULPTED BRAIN GEOMETRY
+// ============================================
+// Materials with the region-color system
+function makeMaterial(color, opacity = 0.9, emissive = 0) {
+  return new THREE.MeshStandardMaterial({
+    color: new THREE.Color(color),
+    roughness: 0.55,
+    metalness: 0.05,
+    transparent: opacity < 1,
+    opacity: opacity,
+    emissive: new THREE.Color(color),
+    emissiveIntensity: emissive,
+    side: THREE.DoubleSide
+  });
+}
+
+// All region meshes registered for picking
+const regionMeshes = {};
+const regionGroups = {};
+
+// Helper: create an organic blob from a sphere by deforming vertices
+function createBlob(width, height, depth, bumpiness = 0.15, seed = 1) {
+  const geo = new THREE.SphereGeometry(1, 48, 36);
+  const pos = geo.attributes.position;
+  // Pseudo-random based on seed
+  let s = seed;
+  const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const noise = (Math.sin(x*3+seed) + Math.cos(y*4+seed*2) + Math.sin(z*3.5+seed*3)) * bumpiness;
+    pos.setXYZ(i, x * (1 + noise) * width, y * (1 + noise) * height, z * (1 + noise) * depth);
+  }
+  geo.computeVertexNormals();
+  return geo;
+}
+
+// Add some sulci (folds) to look brain-like
+function createCortexFolds(parent, scale, color, foldColor) {
+  // Add several thin curved tubes to suggest sulci
+  for (let i = 0; i < 8; i++) {
+    const angle = i * Math.PI / 4 + Math.random() * 0.3;
+    const radius = scale * 0.95;
+    const path = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(Math.cos(angle) * radius, Math.sin(angle) * radius * 0.6, radius * 0.7),
+      new THREE.Vector3(Math.cos(angle + 0.3) * radius * 0.9, Math.sin(angle + 0.3) * radius * 0.4, 0),
+      new THREE.Vector3(Math.cos(angle + 0.6) * radius, Math.sin(angle + 0.6) * radius * 0.5, -radius * 0.7),
+    ]);
+    const tubeGeo = new THREE.TubeGeometry(path, 16, 0.04 * scale, 6, false);
+    const tubeMat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(foldColor),
+      roughness: 0.8,
+      transparent: true,
+      opacity: 0.35
+    });
+    const tube = new THREE.Mesh(tubeGeo, tubeMat);
+    parent.add(tube);
+  }
+}
+
+// ============================================
+// BUILD THE BRAIN
+// ============================================
+
+// PREFRONTAL CORTEX (front lobes - left & right)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(1.5, 1.3, 1.7, 0.12, 11), makeMaterial(0x5c6bc0, 0.92));
+  left.position.set(-1.5, 1.3, 3.5);
+  left.rotation.set(0.2, -0.3, 0.1);
+  left.userData.region = 'prefrontal';
+  const right = new THREE.Mesh(createBlob(1.5, 1.3, 1.7, 0.12, 23), makeMaterial(0x5c6bc0, 0.92));
+  right.position.set(1.5, 1.3, 3.5);
+  right.rotation.set(0.2, 0.3, -0.1);
+  right.userData.region = 'prefrontal';
+  group.add(left, right);
+  createCortexFolds(group, 1.5, 0x5c6bc0, 0x3949ab);
+  regionMeshes.prefrontal = [left, right];
+  regionGroups.prefrontal = group;
+  scene.add(group);
+}
+
+// PARIETAL LOBE (top middle - left & right)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(1.4, 1.0, 1.5, 0.12, 31), makeMaterial(0x1565c0, 0.92));
+  left.position.set(-1.4, 2.0, 0.5);
+  left.rotation.set(0, -0.2, 0);
+  left.userData.region = 'parietal';
+  const right = new THREE.Mesh(createBlob(1.4, 1.0, 1.5, 0.12, 41), makeMaterial(0x1565c0, 0.92));
+  right.position.set(1.4, 2.0, 0.5);
+  right.rotation.set(0, 0.2, 0);
+  right.userData.region = 'parietal';
+  group.add(left, right);
+  regionMeshes.parietal = [left, right];
+  regionGroups.parietal = group;
+  scene.add(group);
+}
+
+// OCCIPITAL LOBE (back)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(1.3, 1.2, 1.4, 0.13, 51), makeMaterial(0x6a1b9a, 0.92));
+  left.position.set(-1.1, 0.6, -3.0);
+  left.userData.region = 'occipital';
+  const right = new THREE.Mesh(createBlob(1.3, 1.2, 1.4, 0.13, 61), makeMaterial(0x6a1b9a, 0.92));
+  right.position.set(1.1, 0.6, -3.0);
+  right.userData.region = 'occipital';
+  group.add(left, right);
+  regionMeshes.occipital = [left, right];
+  regionGroups.occipital = group;
+  scene.add(group);
+}
+
+// TEMPORAL LOBE (sides, lower)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(1.3, 1.0, 1.7, 0.13, 71), makeMaterial(0x2e7d32, 0.92));
+  left.position.set(-2.7, -0.5, 0.5);
+  left.rotation.set(0, 0, 0.15);
+  left.userData.region = 'temporal';
+  const right = new THREE.Mesh(createBlob(1.3, 1.0, 1.7, 0.13, 81), makeMaterial(0x2e7d32, 0.92));
+  right.position.set(2.7, -0.5, 0.5);
+  right.rotation.set(0, 0, -0.15);
+  right.userData.region = 'temporal';
+  group.add(left, right);
+  regionMeshes.temporal = [left, right];
+  regionGroups.temporal = group;
+  scene.add(group);
+}
+
+// CINGULATE CORTEX (arch above corpus callosum)
+{
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0.3, 2.8),
+    new THREE.Vector3(0, 1.5, 2),
+    new THREE.Vector3(0, 1.9, 0.5),
+    new THREE.Vector3(0, 1.7, -1),
+    new THREE.Vector3(0, 0.8, -2.3),
+    new THREE.Vector3(0, -0.2, -2.8)
+  ]);
+  const geo = new THREE.TubeGeometry(curve, 40, 0.45, 8, false);
+  const mesh = new THREE.Mesh(geo, makeMaterial(0xad1457, 0.85));
+  mesh.userData.region = 'cingulate';
+  regionMeshes.cingulate = [mesh];
+  regionGroups.cingulate = mesh;
+  scene.add(mesh);
+}
+
+// CORPUS CALLOSUM (arched bridge - center)
+{
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, -0.2, 2.5),
+    new THREE.Vector3(0, 1.0, 1.8),
+    new THREE.Vector3(0, 1.4, 0),
+    new THREE.Vector3(0, 1.2, -1.5),
+    new THREE.Vector3(0, 0.3, -2.4)
+  ]);
+  const geo = new THREE.TubeGeometry(curve, 40, 0.35, 12, false);
+  const mesh = new THREE.Mesh(geo, makeMaterial(0x00897b, 0.95));
+  mesh.userData.region = 'corpus';
+  regionMeshes.corpus = [mesh];
+  regionGroups.corpus = mesh;
+  scene.add(mesh);
+}
+
+// THALAMUS (center deep, paired ellipsoids)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(
+    new THREE.SphereGeometry(0.7, 28, 22),
+    makeMaterial(0xf57c00, 0.95)
+  );
+  left.scale.set(0.85, 0.7, 1.3);
+  left.position.set(-0.5, 0.2, 0);
+  left.userData.region = 'thalamus';
+  const right = new THREE.Mesh(
+    new THREE.SphereGeometry(0.7, 28, 22),
+    makeMaterial(0xf57c00, 0.95)
+  );
+  right.scale.set(0.85, 0.7, 1.3);
+  right.position.set(0.5, 0.2, 0);
+  right.userData.region = 'thalamus';
+  group.add(left, right);
+  regionMeshes.thalamus = [left, right];
+  regionGroups.thalamus = group;
+  scene.add(group);
+}
+
+// HYPOTHALAMUS (below thalamus, small)
+{
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(0.35, 24, 18),
+    makeMaterial(0x7b1fa2, 0.95)
+  );
+  mesh.scale.set(1.3, 0.7, 1.1);
+  mesh.position.set(0, -0.6, 0.3);
+  mesh.userData.region = 'hypothalamus';
+  regionMeshes.hypothalamus = [mesh];
+  regionGroups.hypothalamus = mesh;
+  scene.add(mesh);
+}
+
+// BASAL GANGLIA (deep clusters either side)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(0.55, 0.55, 0.85, 0.18, 101), makeMaterial(0xef6c00, 0.92));
+  left.position.set(-1.0, 0.0, 0.4);
+  left.userData.region = 'basal';
+  const right = new THREE.Mesh(createBlob(0.55, 0.55, 0.85, 0.18, 111), makeMaterial(0xef6c00, 0.92));
+  right.position.set(1.0, 0.0, 0.4);
+  right.userData.region = 'basal';
+  group.add(left, right);
+  regionMeshes.basal = [left, right];
+  regionGroups.basal = group;
+  scene.add(group);
+}
+
+// HIPPOCAMPUS (curved seahorse shape, deep in temporal)
+{
+  const group = new THREE.Group();
+  const createHippo = (side) => {
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(side * 1.6, -0.8, 0.8),
+      new THREE.Vector3(side * 1.7, -0.5, 0.2),
+      new THREE.Vector3(side * 1.5, -0.3, -0.5),
+      new THREE.Vector3(side * 1.3, -0.5, -1.2),
+    ]);
+    const geo = new THREE.TubeGeometry(curve, 24, 0.25, 8, false);
+    const mesh = new THREE.Mesh(geo, makeMaterial(0x00acc1, 0.95));
+    mesh.userData.region = 'hippocampus';
+    return mesh;
+  };
+  const left = createHippo(-1);
+  const right = createHippo(1);
+  group.add(left, right);
+  regionMeshes.hippocampus = [left, right];
+  regionGroups.hippocampus = group;
+  scene.add(group);
+}
+
+// AMYGDALA (small almonds, anterior to hippocampus)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 22, 18),
+    makeMaterial(0xc2185b, 0.95)
+  );
+  left.scale.set(1.0, 0.85, 1.5);
+  left.position.set(-1.65, -0.85, 1.2);
+  left.userData.region = 'amygdala';
+  const right = new THREE.Mesh(
+    new THREE.SphereGeometry(0.3, 22, 18),
+    makeMaterial(0xc2185b, 0.95)
+  );
+  right.scale.set(1.0, 0.85, 1.5);
+  right.position.set(1.65, -0.85, 1.2);
+  right.userData.region = 'amygdala';
+  group.add(left, right);
+  regionMeshes.amygdala = [left, right];
+  regionGroups.amygdala = group;
+  scene.add(group);
+}
+
+// INSULA (hidden island, under temporal lobe overhang)
+{
+  const group = new THREE.Group();
+  const left = new THREE.Mesh(createBlob(0.5, 0.4, 0.55, 0.1, 121), makeMaterial(0xe64a19, 0.9));
+  left.position.set(-1.7, 0.1, 0.3);
+  left.userData.region = 'insula';
+  const right = new THREE.Mesh(createBlob(0.5, 0.4, 0.55, 0.1, 131), makeMaterial(0xe64a19, 0.9));
+  right.position.set(1.7, 0.1, 0.3);
+  right.userData.region = 'insula';
+  group.add(left, right);
+  regionMeshes.insula = [left, right];
+  regionGroups.insula = group;
+  scene.add(group);
+}
+
+// BROCA'S AREA (left frontal, small patch)
+{
+  const mesh = new THREE.Mesh(createBlob(0.5, 0.4, 0.5, 0.15, 141), makeMaterial(0x0288d1, 0.95));
+  mesh.position.set(-2.6, 0.4, 2.4);
+  mesh.userData.region = 'broca';
+  regionMeshes.broca = [mesh];
+  regionGroups.broca = mesh;
+  scene.add(mesh);
+}
+
+// CEREBELLUM (lower back, characteristic ridged shape)
+{
+  const group = new THREE.Group();
+  const main = new THREE.Mesh(createBlob(1.6, 1.0, 1.2, 0.18, 151), makeMaterial(0x388e3c, 0.92));
+  main.position.set(0, -2.0, -2.5);
+  main.userData.region = 'cerebellum';
+  group.add(main);
+  // Add cerebellar folds (folia) - characteristic ridges
+  for (let i = 0; i < 7; i++) {
+    const y = -1.6 + i * 0.15;
+    const ridge = new THREE.Mesh(
+      new THREE.TorusGeometry(1.4 - i * 0.05, 0.08, 6, 24, Math.PI * 1.6),
+      new THREE.MeshStandardMaterial({
+        color: new THREE.Color(0x2e7d32),
+        roughness: 0.7,
+        transparent: true,
+        opacity: 0.55
+      })
+    );
+    ridge.position.set(0, -2.2 + (i-3) * 0.18, -2.5);
+    ridge.rotation.x = Math.PI / 2 + 0.1;
+    group.add(ridge);
+  }
+  regionMeshes.cerebellum = [main];
+  regionGroups.cerebellum = group;
+  scene.add(group);
+}
+
+// BRAINSTEM (lower center, going down)
+{
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, -0.8, 0),
+    new THREE.Vector3(0, -1.5, -0.4),
+    new THREE.Vector3(0, -2.5, -0.8),
+    new THREE.Vector3(0, -3.5, -1.2),
+  ]);
+  const geo = new THREE.TubeGeometry(curve, 30, 0.5, 16, false);
+  const mesh = new THREE.Mesh(geo, makeMaterial(0x5d4037, 0.95));
+  mesh.userData.region = 'brainstem';
+  regionMeshes.brainstem = [mesh];
+  regionGroups.brainstem = mesh;
+  scene.add(mesh);
+}
+
+// Make sure cortex regions are rendered with depth correctly
+// We want deep structures visible through transparency when toggled
+
+// Track all cortex meshes for transparency toggle
+const cortexRegions = ['prefrontal', 'parietal', 'occipital', 'temporal'];
+let cortexTransparent = false;
+
+window.toggleTransparency = function() {
+  cortexTransparent = !cortexTransparent;
+  cortexRegions.forEach(key => {
+    regionMeshes[key].forEach(m => {
+      m.material.opacity = cortexTransparent ? 0.28 : 0.92;
+      m.material.transparent = true;
+      m.material.depthWrite = !cortexTransparent;
+      m.material.needsUpdate = true;
+    });
+  });
+  document.getElementById('transparency-btn').textContent =
+    cortexTransparent ? 'Outer Layers: Transparent' : 'Outer Layers: Solid';
+};
+
+window.toggleAutoRotate = function() {
+  controls.autoRotate = !controls.autoRotate;
+  document.getElementById('autorotate-btn').textContent =
+    'Auto-Rotate: ' + (controls.autoRotate ? 'On' : 'Off');
+};
+
+// ============================================
+// VIEW PRESETS (animated camera moves)
+// ============================================
+const VIEWS = {
+  default: { pos: [12, 4, 12], target: [0, 0, 0] },
+  lateral: { pos: [18, 0, 0], target: [0, 0, 0] },
+  medial: { pos: [-18, 0, 0], target: [0, 0, 0] },
+  superior: { pos: [0, 18, 0.1], target: [0, 0, 0] },
+  anterior: { pos: [0, 0, 18], target: [0, 0, 0] }
+};
+
+let isAnimatingCamera = false;
+function animateCameraTo(targetPos, lookAt, duration = 1200) {
+  isAnimatingCamera = true;
+  const startPos = camera.position.clone();
+  const startTarget = controls.target.clone();
+  const endPos = new THREE.Vector3(...targetPos);
+  const endTarget = new THREE.Vector3(...lookAt);
+  const startTime = performance.now();
+
+  function step() {
+    const now = performance.now();
+    const t = Math.min((now - startTime) / duration, 1);
+    // ease in-out cubic
+    const e = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2;
+    camera.position.lerpVectors(startPos, endPos, e);
+    controls.target.lerpVectors(startTarget, endTarget, e);
+    controls.update();
+    if (t < 1) {
+      requestAnimationFrame(step);
+    } else {
+      isAnimatingCamera = false;
+    }
+  }
+  step();
+}
+
+window.setView = function(viewName) {
+  document.querySelectorAll('.controls-bar .view-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(viewName) ||
+        (viewName === 'default' && b.textContent.toLowerCase().includes('free'))) {
+      b.classList.add('active');
+    } else if (['default','lateral','medial','superior','anterior'].includes(viewName)) {
+      b.classList.remove('active');
+    }
+  });
+  const v = VIEWS[viewName];
+  if (v) animateCameraTo(v.pos, v.target);
+};
+
+// ============================================
+// PICKING (hover + click)
+// ============================================
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+const hoverLabel = document.getElementById('hover-label');
+const hoverName = document.getElementById('hover-name');
+const hoverSub = document.getElementById('hover-sub');
+
+let hoveredRegion = null;
+const originalEmissive = new Map();
+
+function onPointerMove(event) {
+  const rect = canvas.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const allMeshes = [];
+  Object.values(regionMeshes).forEach(arr => arr.forEach(m => allMeshes.push(m)));
+  const hits = raycaster.intersectObjects(allMeshes, false);
+
+  // Reset previous hover emissive
+  if (hoveredRegion && (!hits.length || hits[0].object.userData.region !== hoveredRegion)) {
+    regionMeshes[hoveredRegion].forEach(m => {
+      m.material.emissiveIntensity = activeRegionKey === hoveredRegion ? 0.4 : 0;
+    });
+    hoveredRegion = null;
+  }
+
+  if (hits.length) {
+    const hit = hits[0].object;
+    const key = hit.userData.region;
+    if (key && REGIONS[key]) {
+      if (hoveredRegion !== key) {
+        hoveredRegion = key;
+        regionMeshes[key].forEach(m => {
+          m.material.emissiveIntensity = 0.25;
+        });
+      }
+      hoverName.textContent = REGIONS[key].name;
+      hoverSub.textContent = REGIONS[key].realName + ' · ' + REGIONS[key].tagline;
+      hoverLabel.classList.add('visible');
+      hoverLabel.style.left = (event.clientX - rect.left + 14) + 'px';
+      hoverLabel.style.top = (event.clientY - rect.top - 30) + 'px';
+      canvas.style.cursor = 'pointer';
+    }
+  } else {
+    hoverLabel.classList.remove('visible');
+    canvas.style.cursor = 'grab';
+  }
+}
+
+let mouseDownPos = null;
+function onPointerDown(e) {
+  mouseDownPos = { x: e.clientX, y: e.clientY };
+}
+function onPointerUp(e) {
+  if (!mouseDownPos) return;
+  const dx = e.clientX - mouseDownPos.x;
+  const dy = e.clientY - mouseDownPos.y;
+  // Only count as a click if barely moved (not a drag)
+  if (Math.sqrt(dx*dx + dy*dy) < 5) {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const allMeshes = [];
+    Object.values(regionMeshes).forEach(arr => arr.forEach(m => allMeshes.push(m)));
+    const hits = raycaster.intersectObjects(allMeshes, false);
+    if (hits.length) {
+      const key = hits[0].object.userData.region;
+      if (key) selectRegion(key);
+    }
+  }
+  mouseDownPos = null;
+}
+
+canvas.addEventListener('pointermove', onPointerMove);
+canvas.addEventListener('pointerdown', onPointerDown);
+canvas.addEventListener('pointerup', onPointerUp);
+canvas.addEventListener('pointerleave', () => {
+  hoverLabel.classList.remove('visible');
+  if (hoveredRegion) {
+    regionMeshes[hoveredRegion].forEach(m => {
+      m.material.emissiveIntensity = activeRegionKey === hoveredRegion ? 0.4 : 0;
+    });
+    hoveredRegion = null;
+  }
+});
+
+// ============================================
+// REGION SELECTION (highlight + detail panel)
+// ============================================
+let activeRegionKey = null;
+
+window.selectRegion = function(key) {
+  if (!REGIONS[key]) return;
+
+  // Reset previous active
+  if (activeRegionKey && activeRegionKey !== key) {
+    regionMeshes[activeRegionKey].forEach(m => {
+      m.material.emissiveIntensity = 0;
+    });
+  }
+  activeRegionKey = key;
+  const r = REGIONS[key];
+
+  // Highlight new active in 3D
+  regionMeshes[key].forEach(m => {
+    m.material.emissiveIntensity = 0.4;
+  });
+
+  // Update sidebar
+  document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('btn-' + key);
+  if (btn) btn.classList.add('active');
+
+  // Fly camera to region
+  const group = regionGroups[key];
+  if (group) {
+    const box = new THREE.Box3().setFromObject(group);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const distance = Math.max(maxDim * 4.5, 8);
+    // Position camera at an angle for better viewing
+    const dir = new THREE.Vector3(0.6, 0.4, 1).normalize();
+    const newPos = center.clone().add(dir.multiplyScalar(distance));
+    animateCameraTo([newPos.x, newPos.y, newPos.z], [center.x, center.y, center.z], 1000);
+  }
+
+  // Build detail panel
+  buildDetailPanel(r);
+};
+
+function buildDetailPanel(r) {
+  const panel = document.getElementById('detail-panel');
+  const empty = document.getElementById('detail-empty');
+
+  const functionsHTML = r.functions.map(f =>
+    `<div class="function-row" style="border-left-color:${r.color};">
+       <div class="function-marker" style="color:${r.color}">${f.label}</div>
+       <div class="function-text">${f.text}</div>
+     </div>`
+  ).join('');
+
+  const friendsHTML = r.friends.map(f =>
+    `<div class="friend-row">
+       <div class="friend-dot" style="background:${f.color}"></div>
+       <div class="friend-name">${f.name}</div>
+       <div class="friend-bond">${f.bond}</div>
+     </div>`
+  ).join('');
+
+  panel.innerHTML = `
+    <div class="detail-color-bar" style="background: linear-gradient(90deg, ${r.color}, ${r.color}44)"></div>
+
+    <div class="character-card" style="color:${r.color}">
+      <div class="character-name">${r.name}</div>
+      <div class="character-role" style="color:${r.color}">${r.role}</div>
+      <div class="character-also">also known as the ${r.realName}, ${r.also}</div>
+      <div class="opening-line" style="border-left-color:${r.color}">${r.opening}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-section-title" style="color:${r.color}">Her Story</div>
+      <div class="detail-body">${r.story}</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="detail-section">
+      <div class="detail-section-title" style="color:${r.color}">Core Functions</div>
+      <div class="core-functions-list">${functionsHTML}</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="detail-section">
+      <div class="detail-section-title" style="color:${r.color}">In Your Everyday Life</div>
+      <div class="everyday-moment" style="border-color:${r.color}30">
+        <span class="everyday-label" style="color:${r.color}">A Moment You'll Recognize</span>
+        ${r.everyday}
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="detail-section">
+      <div class="detail-section-title" style="color:${r.color}">Who She Works With</div>
+      <div class="friends-list">${friendsHTML}</div>
+    </div>
+  `;
+  empty.style.display = 'none';
+  panel.classList.add('visible');
+  document.getElementById('detail-container').scrollTop = 0;
+}
+
+// ============================================
+// RENDER LOOP
+// ============================================
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// Hide loader and start
+document.getElementById('loader').style.display = 'none';
+resizeRenderer();
+animate();
+
+window.addEventListener('resize', resizeRenderer);
+
+// Initialize with amygdala selected
+setTimeout(() => selectRegion('amygdala'), 800);
+</script>
+</body>
+</html>
