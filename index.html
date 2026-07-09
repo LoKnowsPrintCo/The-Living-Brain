@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Inner Kingdom — 3D Meet the Characters Inside Your Mind</title>
+<title>The Living Brain — Interactive Neuroanatomy in Two Voices</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
@@ -86,7 +86,7 @@
   }
   .pulse-dot {
     width: 6px; height: 6px; border-radius: 50%;
-    background: #e8d5b7; animation: pulse 2s ease-in-out infinite;
+    background: #00acc1; animation: pulse 2s ease-in-out infinite;
   }
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
@@ -400,7 +400,43 @@
   }
 
 
-  /* Stories-specific styling */
+  /* Mode Toggle */
+  .mode-toggle {
+    display: inline-flex;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 100px;
+    padding: 3px;
+  }
+  .mode-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .mode-btn:hover { color: var(--text-primary); }
+  .mode-btn.active {
+    background: rgba(255,255,255,0.10);
+    color: var(--highlight);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  /* When in stories mode, wordmark goes italic */
+  body.stories-mode .wordmark-title {
+    font-style: italic;
+  }
+  body.stories-mode .pulse-dot { background: #e8d5b7; }
+  body.anatomical-mode .stories-only { display: none !important; }
+  body.stories-mode .anatomical-only { display: none !important; }
+
+  /* Stories-specific styling (character cards, opening lines) */
   .character-card {
     background: var(--glass);
     border: 1px solid var(--glass-border);
@@ -412,11 +448,8 @@
   }
   .character-card::before {
     content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: currentColor;
-    opacity: 0.6;
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: currentColor; opacity: 0.6;
   }
   .character-name {
     font-family: 'Playfair Display', serif;
@@ -439,8 +472,7 @@
     font-size: 16px; font-style: italic;
     line-height: 1.5; color: var(--highlight);
     margin: 14px 0 0 0; padding-left: 12px;
-    border-left: 2px solid;
-    opacity: 0.95;
+    border-left: 2px solid; opacity: 0.95;
   }
   .detail-section-title {
     font-family: 'Playfair Display', serif;
@@ -470,9 +502,7 @@
     font-size: 14px; line-height: 1.5;
     color: rgba(232,228,220,0.92);
   }
-  .function-text strong {
-    color: var(--highlight); font-weight: 600;
-  }
+  .function-text strong { color: var(--highlight); font-weight: 600; }
   .everyday-moment {
     background: rgba(232,213,183,0.05);
     border: 1px solid rgba(232,213,183,0.15);
@@ -491,19 +521,14 @@
     color: var(--highlight); opacity: 0.7;
     display: block; margin-bottom: 6px;
   }
-  .friends-list {
-    display: flex; flex-direction: column; gap: 6px; margin-top: 4px;
-  }
+  .friends-list { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
   .friend-row {
     display: flex; align-items: center; gap: 10px;
     padding: 8px 10px;
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
+    background: var(--glass); border: 1px solid var(--glass-border);
     border-radius: 6px;
   }
-  .friend-dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  }
+  .friend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .friend-name {
     font-family: 'Playfair Display', serif;
     font-style: italic; font-size: 13px;
@@ -515,6 +540,19 @@
     margin-left: auto; font-style: italic;
   }
 
+  /* Region button labels adapt to mode */
+  body.stories-mode .region-name {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+  body.stories-mode .region-nickname {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+
   ::-webkit-scrollbar { width: 3px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
@@ -522,19 +560,31 @@
 </head>
 <body>
 
+<div id="error-banner" style="display:none; position:fixed; top:0; left:0; right:0; z-index:9999; background:#c2185b; color:white; padding:12px 20px; font-family:'Space Mono',monospace; font-size:11px; line-height:1.5; white-space:pre-wrap; max-height:50vh; overflow:auto;"></div>
+
 <div class="grain"></div>
 
 <header>
   <div>
-    <div class="wordmark-title" style="font-style:italic;">The Inner Kingdom</div>
-    <div class="wordmark-sub">Meet the Characters Inside Your Mind · 3D</div>
+    <div class="wordmark-title" id="wordmark-title">The Living Brain</div>
+    <div class="wordmark-sub" id="wordmark-sub">3D Interactive Neuroanatomy</div>
   </div>
-  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+  <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-anatomical" onclick="setMode('anatomical')">Anatomical</button>
+      <button class="mode-btn" id="mode-stories" onclick="setMode('stories')">Inner Kingdom</button>
+    </div>
     <div class="legend-pill">
       <div class="pulse-dot"></div>
-      15 Characters · Drag to Rotate
+      <span id="pill-count">15 Regions</span> · Drag to Rotate
     </div>
-    <div class="legend-pill" style="border-color: rgba(232,213,183,0.3); color: rgba(232,213,183,0.85);">
+    <div class="legend-pill anatomical-only" style="border-color: rgba(194,24,91,0.3); color: rgba(194,24,91,0.7);">
+      ◈ ADHD/AuDHD Insights
+    </div>
+    <div class="legend-pill anatomical-only" style="border-color: rgba(232,213,183,0.3); color: rgba(232,213,183,0.85);">
+      ◇ Jung × Nardi Layer
+    </div>
+    <div class="legend-pill stories-only" style="display:none; border-color: rgba(232,213,183,0.3); color: rgba(232,213,183,0.85);">
       A Story in Every Region
     </div>
   </div>
@@ -544,81 +594,81 @@
 
   <!-- LEFT: Region Navigator -->
   <div class="sidebar-left">
-    <div class="sidebar-section-label">The Cast</div>
+    <div class="sidebar-section-label" id="sidebar-section-label">Navigate</div>
 
     <div class="region-group">
-      <div class="region-group-title">— The Feeling Court</div>
+      <div class="region-group-title" data-anatomical="— Limbic System" data-stories="— The Feeling Court">— Limbic System</div>
       <button class="region-btn" onclick="selectRegion('amygdala')" id="btn-amygdala">
         <div class="region-dot" style="background:var(--amygdala-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Sentinel</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Amygdala</span></div>
+        <div><span class="region-name" data-anatomical="Amygdala" data-stories="The Sentinel">Amygdala</span><span class="region-nickname" data-anatomical="The Sentinel" data-stories="Amygdala">The Sentinel</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('hippocampus')" id="btn-hippocampus">
         <div class="region-dot" style="background:var(--hippocampus-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Archivist</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Hippocampus</span></div>
+        <div><span class="region-name" data-anatomical="Hippocampus" data-stories="The Archivist">Hippocampus</span><span class="region-nickname" data-anatomical="The Archivist" data-stories="Hippocampus">The Archivist</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('hypothalamus')" id="btn-hypothalamus">
         <div class="region-dot" style="background:var(--hypothalamus-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Regulator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Hypothalamus</span></div>
+        <div><span class="region-name" data-anatomical="Hypothalamus" data-stories="The Regulator">Hypothalamus</span><span class="region-nickname" data-anatomical="The Regulator" data-stories="Hypothalamus">The Regulator</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('cingulate')" id="btn-cingulate">
         <div class="region-dot" style="background:var(--cingulate-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Mediator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Cingulate Cortex</span></div>
+        <div><span class="region-name" data-anatomical="Cingulate Cortex" data-stories="The Mediator">Cingulate Cortex</span><span class="region-nickname" data-anatomical="The Mediator" data-stories="Cingulate Cortex">The Mediator</span></div>
       </button>
     </div>
 
     <div class="region-group">
-      <div class="region-group-title">— The Thinking Realm</div>
+      <div class="region-group-title" data-anatomical="— Cortex" data-stories="— The Thinking Realm">— Cortex</div>
       <button class="region-btn" onclick="selectRegion('prefrontal')" id="btn-prefrontal">
         <div class="region-dot" style="background:var(--prefrontal-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Commander</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Prefrontal Cortex</span></div>
+        <div><span class="region-name" data-anatomical="Prefrontal Cortex" data-stories="The Commander">Prefrontal Cortex</span><span class="region-nickname" data-anatomical="The Commander" data-stories="Prefrontal Cortex">The Commander</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('parietal')" id="btn-parietal">
         <div class="region-dot" style="background:var(--parietal-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Navigator</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Parietal Lobe</span></div>
+        <div><span class="region-name" data-anatomical="Parietal Lobe" data-stories="The Navigator">Parietal Lobe</span><span class="region-nickname" data-anatomical="The Navigator" data-stories="Parietal Lobe">The Navigator</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('occipital')" id="btn-occipital">
         <div class="region-dot" style="background:var(--occipital-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Cinema</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Occipital Lobe</span></div>
+        <div><span class="region-name" data-anatomical="Occipital Lobe" data-stories="The Cinema">Occipital Lobe</span><span class="region-nickname" data-anatomical="The Cinema" data-stories="Occipital Lobe">The Cinema</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('temporal')" id="btn-temporal">
         <div class="region-dot" style="background:var(--temporal-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Interpreter</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Temporal Lobe</span></div>
+        <div><span class="region-name" data-anatomical="Temporal Lobe" data-stories="The Interpreter">Temporal Lobe</span><span class="region-nickname" data-anatomical="The Interpreter" data-stories="Temporal Lobe">The Interpreter</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('insula')" id="btn-insula">
         <div class="region-dot" style="background:var(--insula-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Body-Reader</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Insula</span></div>
+        <div><span class="region-name" data-anatomical="Insula" data-stories="The Body-Reader">Insula</span><span class="region-nickname" data-anatomical="The Body-Reader" data-stories="Insula">The Body-Reader</span></div>
       </button>
     </div>
 
     <div class="region-group">
-      <div class="region-group-title">— The Deep Chambers</div>
+      <div class="region-group-title" data-anatomical="— Deep Structures" data-stories="— The Deep Chambers">— Deep Structures</div>
       <button class="region-btn" onclick="selectRegion('thalamus')" id="btn-thalamus">
         <div class="region-dot" style="background:var(--thalamus-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Relay</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Thalamus</span></div>
+        <div><span class="region-name" data-anatomical="Thalamus" data-stories="The Relay">Thalamus</span><span class="region-nickname" data-anatomical="The Relay" data-stories="Thalamus">The Relay</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('basal')" id="btn-basal">
         <div class="region-dot" style="background:var(--basal-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Habit Forge</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Basal Ganglia</span></div>
+        <div><span class="region-name" data-anatomical="Basal Ganglia" data-stories="The Habit Forge">Basal Ganglia</span><span class="region-nickname" data-anatomical="The Habit Forge" data-stories="Basal Ganglia">The Habit Forge</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('corpus')" id="btn-corpus">
         <div class="region-dot" style="background:var(--corpus-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Bridge</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Corpus Callosum</span></div>
+        <div><span class="region-name" data-anatomical="Corpus Callosum" data-stories="The Bridge">Corpus Callosum</span><span class="region-nickname" data-anatomical="The Bridge" data-stories="Corpus Callosum">The Bridge</span></div>
       </button>
     </div>
 
     <div class="region-group">
-      <div class="region-group-title">— The Working Hands</div>
+      <div class="region-group-title" data-anatomical="— Language &amp; Action" data-stories="— The Working Hands">— Language &amp; Action</div>
       <button class="region-btn" onclick="selectRegion('broca')" id="btn-broca">
         <div class="region-dot" style="background:var(--broca-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Speaker</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Broca's Area</span></div>
+        <div><span class="region-name" data-anatomical="Broca's Area" data-stories="The Speaker">Broca's Area</span><span class="region-nickname" data-anatomical="The Speaker" data-stories="Broca's Area">The Speaker</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('cerebellum')" id="btn-cerebellum">
         <div class="region-dot" style="background:var(--cerebellum-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Choreographer</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Cerebellum</span></div>
+        <div><span class="region-name" data-anatomical="Cerebellum" data-stories="The Choreographer">Cerebellum</span><span class="region-nickname" data-anatomical="The Choreographer" data-stories="Cerebellum">The Choreographer</span></div>
       </button>
       <button class="region-btn" onclick="selectRegion('brainstem')" id="btn-brainstem">
         <div class="region-dot" style="background:var(--brainstem-color)"></div>
-        <div><span class="region-name" style="font-family:'Playfair Display',serif; font-style:italic;">The Ancient Core</span><span class="region-nickname" style="font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-style:normal;">Brainstem</span></div>
+        <div><span class="region-name" data-anatomical="Brainstem" data-stories="The Ancient Core">Brainstem</span><span class="region-nickname" data-anatomical="The Ancient Core" data-stories="Brainstem">The Ancient Core</span></div>
       </button>
     </div>
   </div>
@@ -626,12 +676,12 @@
   <!-- CENTER: 3D Canvas -->
   <div class="brain-viewport">
     <div class="controls-bar">
-      <button class="view-btn active" onclick="setView('default')">Free Rotate</button>
-      <button class="view-btn" onclick="setView('lateral')">From the Side</button>
-      <button class="view-btn" onclick="setView('medial')">From Within</button>
-      <button class="view-btn" onclick="setView('superior')">From Above</button>
-      <button class="view-btn" onclick="setView('anterior')">From the Front</button>
-      <button class="view-btn" onclick="toggleTransparency()" id="transparency-btn">Outer Layers: Solid</button>
+      <button class="view-btn active" onclick="setView('default')" data-anatomical="Free Rotate" data-stories="Free Rotate">Free Rotate</button>
+      <button class="view-btn" onclick="setView('lateral')" data-anatomical="Lateral" data-stories="From the Side">Lateral</button>
+      <button class="view-btn" onclick="setView('medial')" data-anatomical="Medial" data-stories="From Within">Medial</button>
+      <button class="view-btn" onclick="setView('superior')" data-anatomical="Superior" data-stories="From Above">Superior</button>
+      <button class="view-btn" onclick="setView('anterior')" data-anatomical="Anterior" data-stories="From the Front">Anterior</button>
+      <button class="view-btn" onclick="toggleTransparency()" id="transparency-btn">Cortex: Solid</button>
       <button class="view-btn" onclick="toggleAutoRotate()" id="autorotate-btn">Auto-Rotate: Off</button>
     </div>
 
@@ -644,16 +694,16 @@
       </div>
     </div>
 
-    <div class="interaction-hint">Drag to rotate · Scroll to zoom · Click any character</div>
+    <div class="interaction-hint" data-anatomical="Drag to rotate · Scroll to zoom · Click any region" data-stories="Drag to rotate · Scroll to zoom · Click any character">Drag to rotate · Scroll to zoom · Click any region</div>
 
     <div class="color-legend">
-      <div class="legend-item"><div class="legend-swatch" style="background:#c2185b"></div>Feeling</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#00acc1"></div>Memory</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#5c6bc0"></div>Thinking</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#388e3c"></div>Movement</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#f57c00"></div>Connecting</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#7b1fa2"></div>Caring</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#6a1b9a"></div>Seeing</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#c2185b"></div><span data-anatomical="Emotion" data-stories="Feeling">Emotion</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#00acc1"></div><span data-anatomical="Memory" data-stories="Memory">Memory</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#5c6bc0"></div><span data-anatomical="Executive" data-stories="Thinking">Executive</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#388e3c"></div><span data-anatomical="Coordination" data-stories="Movement">Coordination</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#f57c00"></div><span data-anatomical="Relay" data-stories="Connecting">Relay</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#7b1fa2"></div><span data-anatomical="Regulation" data-stories="Caring">Regulation</span></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#6a1b9a"></div><span data-anatomical="Vision" data-stories="Seeing">Vision</span></div>
     </div>
   </div>
 
@@ -661,7 +711,7 @@
   <div class="sidebar-right" id="detail-container">
     <div class="detail-empty" id="detail-empty">
       <div class="detail-empty-icon">◎</div>
-      <div class="detail-empty-text">Choose a character from the cast, or click anywhere on the brain, to hear their story.</div>
+      <div class="detail-empty-text" data-anatomical="Click any region on the brain, or choose from the navigation, to begin exploring." data-stories="Choose a character from the cast, or click anywhere on the brain, to hear their story.">Click any region on the brain, or choose from the navigation, to begin exploring.</div>
     </div>
     <div class="detail-panel" id="detail-panel"></div>
   </div>
@@ -678,6 +728,25 @@
 }
 </script>
 
+<script>
+window.addEventListener('error', function(e) {
+  var banner = document.getElementById('error-banner');
+  if (banner) {
+    banner.style.display = 'block';
+    banner.textContent = 'ERROR: ' + (e.message || 'unknown') + '\nSource: ' + (e.filename||'?') + ':' + (e.lineno||'?') + ':' + (e.colno||'?') + (e.error && e.error.stack ? '\n\nStack:\n' + e.error.stack : '');
+  }
+  console.error('Window error:', e);
+});
+window.addEventListener('unhandledrejection', function(e) {
+  var banner = document.getElementById('error-banner');
+  if (banner) {
+    banner.style.display = 'block';
+    banner.textContent = 'PROMISE REJECTION: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason)) + (e.reason && e.reason.stack ? '\n\nStack:\n' + e.reason.stack : '');
+  }
+  console.error('Promise rejection:', e.reason);
+});
+</script>
+
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -687,303 +756,525 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // ============================================
 const REGIONS = {
   amygdala: {
-    name: "The Sentinel", realName: "Amygdala",
+    name: "Amygdala", nickname: "The Sentinel",
+    latin: "corpus amygdaloideum — almond-shaped body",
+    color: "#c2185b",
+    tagline: "Fear · Threat Detection · Emotional Memory",
+    functions: ["Fear Response", "Emotional Learning", "Threat Assessment", "Social Cognition", "Stress Activation"],
+    summary: `The amygdala is your brain's <strong>ancient alarm system</strong>, scanning every moment for potential danger before your conscious mind even registers a thought. Shaped like an almond, it sits deep within the temporal lobe, one on each side of the brain.<br><br>When the amygdala fires, it hijacks the rest of the brain in milliseconds. Heart rate surges, breathing shallows, attention narrows. This is the <strong>amygdala hijack</strong>, a term coined by Daniel Goleman. It's not irrationality. It's evolution.`,
+    phd_note: `Structurally, the amygdala contains multiple nuclei: the basolateral complex (critical for fear conditioning), central nucleus (autonomic fear responses), and the medial nucleus (olfactory and social signals). It communicates bidirectionally with the hippocampus, prefrontal cortex, and hypothalamus, forming the core of the <em>fear circuitry</em>. Research by LeDoux identified a fast subcortical "low road" pathway (thalamus → amygdala) and a slower cortical "high road" (thalamus → cortex → amygdala).`,
+    adhd_insight: `In ADHD and AuDHD brains, the amygdala is often hyperreactive. What others process as mild frustration can register as genuine threat. Rejection Sensitive Dysphoria (RSD), that overwhelming pain from perceived rejection, lives here. Your amygdala isn't broken. It's been running threat-detection software on a nervous system wired for heightened sensitivity since birth.`,
+    jung: {
+      functions: ["Fi", "Fe"],
+      rows: [
+        { code: "Fi", name: "Introverted Feeling", body: `The amygdala tags experiences with personal emotional weight, the same job Jung described for <em>Fi</em>. It is the seat of "this matters to me" before language explains why.`, types: ["INFP", "ISFP", "ENFP", "ESFP"] },
+        { code: "Fe", name: "Extraverted Feeling", body: `The amygdala's reading of others' facial expressions and emotional tone supports <em>Fe</em>'s social attunement, sensing the room's emotional temperature.`, types: ["ENFJ", "ESFJ", "INFJ", "ISFJ"] }
+      ]
+    },
     role: "Guardian of the Inner Kingdom",
     also: "shaped like an almond, deep in the temple of memory",
-    color: "#c2185b", nickname: "The Sentinel",
-    tagline: "Watches for danger",
-    opening: "She never sleeps. Long before you knew there was a world, the Sentinel was already standing at the gate, listening.",
+    opening: `She never sleeps. Long before you knew there was a world, the Sentinel was already standing at the gate, listening.`,
     story: `The Sentinel is your brain's <strong>oldest guard</strong>, an almond-shaped watcher who lives deep inside the temple of memory. Her job is to keep you alive. Every second of every day, she scans your surroundings for anything that might be a threat.<br><br>She moves faster than thought itself. When a dog barks behind you, your heart pounds <em>before</em> you even realize what you heard. That was the Sentinel, pulling the alarm. She would rather be wrong a hundred times than miss the one moment that mattered.<br><br>She remembers every scare you've ever had. She does not forget. This is how she protects you, but it is also why old fears can return so strongly when something today reminds her of something long ago.`,
-    functions: [
-      { label: "I.", text: "She raises the alarm when she senses <strong>danger</strong>, real or remembered." },
-      { label: "II.", text: "She tags every memory with how it <strong>felt</strong>, so you know what to avoid later." },
-      { label: "III.", text: "She reads faces and voices, asking always: <strong>are you safe with this person?</strong>" }
+    storyFunctions: [
+      { label: "I.", text: `She raises the alarm when she senses <strong>danger</strong>, real or remembered.` },
+      { label: "II.", text: `She tags every memory with how it <strong>felt</strong>, so you know what to avoid later.` },
+      { label: "III.", text: `She reads faces and voices, asking always: <strong>are you safe with this person?</strong>` }
     ],
-    everyday: "When your heart races during a scary movie, when you suddenly feel hurt by a friend's comment, when you sense something is off but cannot say why, the Sentinel is the one whispering: <em>pay attention</em>.",
+    everyday: `When your heart races during a scary movie, when you suddenly feel hurt by a friend's comment, when you sense something is off but cannot say why, the Sentinel is the one whispering: <em>pay attention</em>.`,
     friends: [
       { name: "The Archivist", color: "#00acc1", bond: "shares her memories" },
       { name: "The Commander", color: "#5c6bc0", bond: "calms her down" },
       { name: "The Regulator", color: "#7b1fa2", bond: "answers her alarms" }
+    ],
+        connections: [
+      { name: "Hippocampus", color: "#00acc1" }, { name: "Prefrontal Cortex", color: "#5c6bc0" },
+      { name: "Hypothalamus", color: "#7b1fa2" }, { name: "Insula", color: "#e64a19" },
+      { name: "Thalamus", color: "#f57c00" }
     ]
   },
   hippocampus: {
-    name: "The Archivist", realName: "Hippocampus",
+    name: "Hippocampus", nickname: "The Archivist",
+    latin: "hippocampus — sea horse", color: "#00acc1",
+    tagline: "Memory Formation · Spatial Navigation · Context",
+    functions: ["Long-term Memory", "Spatial Mapping", "Episodic Memory", "Pattern Separation", "Context Binding"],
+    summary: `The hippocampus is the <strong>gateway to long-term memory</strong>. Every experience you want to keep, a conversation, a smell that transports you, the layout of your childhood home, must pass through the hippocampus to become permanent.<br><br>It also contains your brain's GPS. Place cells in the hippocampus fire in specific locations, creating a <strong>cognitive map</strong> of every environment you've ever inhabited. You navigate space and memory with the same organ.`,
+    phd_note: `The hippocampus is a seahorse-shaped structure in the medial temporal lobe, part of the archicortex (three-layered cortex). It includes CA1, CA2, CA3, and CA4 fields (Cornu Ammonis) and the dentate gyrus. CA3 and the dentate gyrus are critical for pattern separation (distinguishing similar events), while CA1 links to the entorhinal cortex for memory consolidation. The hippocampus undergoes neurogenesis throughout life, new neurons are born here in adults, a process modulated by exercise, stress, and sleep.`,
+    adhd_insight: `ADHD and AuDHD brains often struggle with <em>prospective memory</em>, remembering to do something in the future. This isn't laziness or disrespect. The hippocampus-prefrontal loop that flags future tasks is underconnected. Context-dependent memory is also common: you remember something in the kitchen you forgot in the bedroom. Environment and memory are inseparable in your brain.`,
+    jung: {
+      functions: ["Si"],
+      rows: [
+        { code: "Si", name: "Introverted Sensing", body: `<em>Si</em> is Jung's function for stored personal experience: comparing present moments to a deep library of past ones. The hippocampus is the literal library. <strong>Si-dominant types lean on this region heavily</strong>, which is why they hold detail, sequence, and history with such fidelity.`, types: ["ISTJ", "ISFJ", "ESTJ", "ESFJ"] }
+      ]
+    },
     role: "Keeper of the Library of You",
     also: "curled like a seahorse, holding every story you've ever lived",
-    color: "#00acc1", nickname: "The Archivist",
-    tagline: "Saves your memories",
-    opening: "Every moment you want to keep, every story worth remembering, must pass through the Archivist's hands.",
+    opening: `Every moment you want to keep, every story worth remembering, must pass through the Archivist's hands.`,
     story: `The Archivist sits quietly in the library of your mind, curled like a tiny seahorse, surrounded by every story you've ever lived. He decides which moments get saved as memories and which fade away by sunset.<br><br>He also draws <strong>maps</strong>. He remembers the layout of your kitchen, the path to your best friend's house, the way the wind smells before a storm. Place and memory are stored together in his library, which is why a song or a smell can suddenly bring back a whole summer.<br><br>He works best when you have <strong>slept well, moved your body, and felt calm</strong>. When stress is too loud, the Archivist cannot hear which memories to save. This is why hard days can feel like a blur.`,
-    functions: [
-      { label: "I.", text: "He turns experiences into <strong>long-lasting memories</strong>." },
-      { label: "II.", text: "He builds <strong>mental maps</strong> of every place you go." },
-      { label: "III.", text: "He helps you find the right memory at the right moment." }
+    storyFunctions: [
+      { label: "I.", text: `He turns experiences into <strong>long-lasting memories</strong>.` },
+      { label: "II.", text: `He builds <strong>mental maps</strong> of every place you go.` },
+      { label: "III.", text: `He helps you find the right memory at the right moment.` }
     ],
-    everyday: "When you walk into your old elementary school and a flood of feelings comes back, when you remember exactly where you sat on the first day of a hard year, the Archivist is the one who saved those pages.",
+    everyday: `When you walk into your old elementary school and a flood of feelings comes back, when you remember exactly where you sat on the first day of a hard year, the Archivist is the one who saved those pages.`,
     friends: [
       { name: "The Sentinel", color: "#c2185b", bond: "marks emotional memories" },
       { name: "The Commander", color: "#5c6bc0", bond: "asks for memories" },
       { name: "The Relay", color: "#f57c00", bond: "delivers fresh experiences" }
+    ],
+        connections: [
+      { name: "Amygdala", color: "#c2185b" }, { name: "Prefrontal Cortex", color: "#5c6bc0" },
+      { name: "Entorhinal Cortex", color: "#00acc1" }, { name: "Thalamus", color: "#f57c00" },
+      { name: "Cingulate Cortex", color: "#ad1457" }
     ]
   },
   prefrontal: {
-    name: "The Commander", realName: "Prefrontal Cortex",
+    name: "Prefrontal Cortex", nickname: "The Commander",
+    latin: "cortex praefrontalis — the forefront of thought",
+    color: "#5c6bc0",
+    tagline: "Planning · Judgment · Impulse Control · Identity",
+    functions: ["Decision Making", "Working Memory", "Impulse Control", "Personality", "Social Behavior", "Abstract Thought"],
+    summary: `The prefrontal cortex (PFC) is what separates contemplation from reaction. The most <strong>recently evolved part of the human brain</strong>, it sits just behind your forehead and handles everything we call "being a person", your values, your plans, your ability to consider consequences before acting.<br><br>It takes <strong>25 years to fully develop</strong>. Every teenager who's ever made a baffling decision has their PFC to thank (or blame).`,
+    phd_note: `The PFC comprises the dorsolateral PFC (dlPFC, working memory, cognitive control), ventromedial PFC (vmPFC, value-based decision making, emotional regulation), orbitofrontal cortex (OFC, reward processing, social norms), and anterior PFC (prospective memory, multi-tasking). Disruption of the dlPFC-striatal pathway is implicated in ADHD. The vmPFC is critical for integrating emotional signals into decisions: Damasio's Somatic Marker Hypothesis holds that rational decisions require intact emotional signaling here.`,
+    adhd_insight: `The PFC is ground zero for ADHD neurology. Underactivation of the dlPFC reduces working memory capacity, that mental whiteboard that holds your "current task", and weakens top-down inhibition of the amygdala. The good news: the PFC is <em>extraordinarily plastic</em>. High interest, novelty, and emotional salience are the keys that unlock PFC function in ADHD brains when dopamine pathways are irregular.`,
+    jung: {
+      functions: ["Te", "Ti", "Ni"],
+      rows: [
+        { code: "Te", name: "Extraverted Thinking", body: `The dorsolateral PFC supports <em>Te</em>'s job: organizing external systems, building plans, executing logic on the world. The left PFC especially.`, types: ["ENTJ", "ESTJ", "INTJ", "ISTJ"] },
+        { code: "Ti", name: "Introverted Thinking", body: `The same dorsolateral PFC, working inward, builds <em>Ti</em>'s internal logical frameworks. Quietly cataloguing how things actually work.`, types: ["INTP", "ISTP", "ENTP", "ESTP"] },
+        { code: "Ni", name: "Introverted Intuition", body: `Right-side PFC activation patterns Nardi associated with <em>Ni</em>: cross-region synthesis, the "aha" that arrives whole.`, types: ["INFJ", "INTJ", "ENFJ", "ENTJ"] }
+      ]
+    },
     role: "Captain of Choices",
     also: "wearing the crown just behind your forehead",
-    color: "#5c6bc0", nickname: "The Commander",
-    tagline: "Plans and decides",
-    opening: "She does not move quickly. She thinks first, weighs the cost, then chooses.",
+    opening: `She does not move quickly. She thinks first, weighs the cost, then chooses.`,
     story: `The Commander stands behind your forehead, wearing the crown of the brain. She is the part of you that <strong>pauses before reacting</strong>. The part that says, <em>wait, let me think this through.</em> She is the captain of your choices.<br><br>She is also the slowest part of you to grow up. The Commander is not fully ready until you are around <strong>twenty-five years old</strong>. This is why teenagers and young adults sometimes make decisions that later make no sense to them. The Commander was still in training.<br><br>She holds your goals, your plans, your sense of who you want to become. When the Sentinel sounds an alarm, the Commander is the one who decides whether to run, stay, or speak up. She is what makes you <strong>you</strong>.`,
-    functions: [
-      { label: "I.", text: "She makes <strong>decisions</strong> after weighing different choices." },
-      { label: "II.", text: "She holds <strong>plans and goals</strong> in mind while you work toward them." },
-      { label: "III.", text: "She tells the Sentinel when an alarm is a <strong>false one</strong>." }
+    storyFunctions: [
+      { label: "I.", text: `She makes <strong>decisions</strong> after weighing different choices.` },
+      { label: "II.", text: `She holds <strong>plans and goals</strong> in mind while you work toward them.` },
+      { label: "III.", text: `She tells the Sentinel when an alarm is a <strong>false one</strong>.` }
     ],
-    everyday: "When you choose to study instead of scroll, when you stop yourself from saying something you'd regret, when you imagine your life five years from now, the Commander is doing her quiet, careful work.",
+    everyday: `When you choose to study instead of scroll, when you stop yourself from saying something you'd regret, when you imagine your life five years from now, the Commander is doing her quiet, careful work.`,
     friends: [
       { name: "The Sentinel", color: "#c2185b", bond: "asks her to settle" },
       { name: "The Archivist", color: "#00acc1", bond: "supplies her with memories" },
       { name: "The Habit Forge", color: "#ef6c00", bond: "competes for control" }
+    ],
+        connections: [
+      { name: "Amygdala", color: "#c2185b" }, { name: "Hippocampus", color: "#00acc1" },
+      { name: "Basal Ganglia", color: "#ef6c00" }, { name: "Thalamus", color: "#f57c00" },
+      { name: "Cingulate Cortex", color: "#ad1457" }
     ]
   },
   cerebellum: {
-    name: "The Choreographer", realName: "Cerebellum",
+    name: "Cerebellum", nickname: "The Choreographer",
+    latin: "cerebellum — little brain", color: "#388e3c",
+    tagline: "Motor Coordination · Timing · Procedural Learning",
+    functions: ["Balance", "Motor Coordination", "Procedural Memory", "Timing", "Cognitive Processing"],
+    summary: `Tucked at the back and bottom of the skull, the cerebellum contains <strong>more neurons than the rest of the brain combined</strong>, roughly 69 billion. It is the body's precision instrument, calibrating every movement you make before it happens by predicting the physical consequences of your actions.<br><br>When you reach for a glass without spilling it, thank your cerebellum. When you learn to ride a bike, dance, or type without looking, that knowledge lives here.`,
+    phd_note: `The cerebellum contains three functional divisions: vestibulocerebellum (balance, eye movements), spinocerebellum (limb and trunk coordination), and cerebrocerebellum (planning, motor timing, cognitive functions). Output travels via deep cerebellar nuclei through the thalamus to motor cortex. The cerebellum performs an <em>internal model</em> of body physics: it doesn't just react, it predicts. Recent research implicates the cerebellum in language, cognition, and even autism spectrum features.`,
+    adhd_insight: `Emerging research shows cerebellar involvement in ADHD beyond motor clumsiness. The cerebellum's role in <em>temporal processing</em>, judging how much time has passed, connects to the time blindness so many with ADHD experience. The sensation that an hour was five minutes, or five minutes felt like an hour, may partly be cerebellar. Proprioception differences in AuDHD (not knowing where your body is in space) also trace here.`,
+    jung: {
+      functions: ["Si", "Se"],
+      rows: [
+        { code: "Si / Se", name: "Sensing functions, embodied", body: `The cerebellum stores procedural memory (the "how" of skills) and predicts physical consequences in real time. Both <em>Si</em>'s muscle-memory and <em>Se</em>'s in-the-moment body awareness lean on it. Strong cerebellar coordination is common in athletes, dancers, musicians regardless of type.`, types: ["ISFP", "ESFP", "ISTP", "ESTP", "ISFJ", "ISTJ"] }
+      ]
+    },
     role: "Dancer at the Back of the Mind",
     also: "more neurons than the rest of the brain combined, hidden behind the skull",
-    color: "#388e3c", nickname: "The Choreographer",
-    tagline: "Moves you with grace",
-    opening: "She does not announce herself. But every smooth step, every caught ball, every steady hand belongs to her.",
+    opening: `She does not announce herself. But every smooth step, every caught ball, every steady hand belongs to her.`,
     story: `The Choreographer lives at the back of your skull, small but mighty. She holds <strong>more brain cells than the rest of the brain combined</strong>. Every movement you make, she rehearses a split-second before it happens.<br><br>When you reach for a glass of water without spilling it, she is the reason. When you learn to ride a bike or play an instrument, you are <strong>handing the movements over to her</strong> so your Commander does not have to think about them anymore. This is why riding a bike comes back so easily, even after years.<br><br>She also feels time. The pause between two notes, the rhythm of a song, the sense that five minutes have passed, all of this is the Choreographer keeping count in the back of the mind.`,
-    functions: [
-      { label: "I.", text: "She fine-tunes every <strong>movement</strong> so it lands the way you intend." },
-      { label: "II.", text: "She stores <strong>learned skills</strong> like riding, swimming, typing." },
-      { label: "III.", text: "She keeps <strong>time</strong> and rhythm in your body and mind." }
+    storyFunctions: [
+      { label: "I.", text: `She fine-tunes every <strong>movement</strong> so it lands the way you intend.` },
+      { label: "II.", text: `She stores <strong>learned skills</strong> like riding, swimming, typing.` },
+      { label: "III.", text: `She keeps <strong>time</strong> and rhythm in your body and mind.` }
     ],
-    everyday: "When you catch a falling phone, when your fingers find the right piano keys without looking, when you feel a song's beat before the next note plays, the Choreographer is dancing inside you.",
+    everyday: `When you catch a falling phone, when your fingers find the right piano keys without looking, when you feel a song's beat before the next note plays, the Choreographer is dancing inside you.`,
     friends: [
       { name: "The Relay", color: "#f57c00", bond: "sends her signals" },
       { name: "The Ancient Core", color: "#5d4037", bond: "shares the deep work" },
       { name: "The Habit Forge", color: "#ef6c00", bond: "trades skills back and forth" }
+    ],
+        connections: [
+      { name: "Thalamus", color: "#f57c00" }, { name: "Brainstem", color: "#5d4037" },
+      { name: "Motor Cortex", color: "#388e3c" }, { name: "Basal Ganglia", color: "#ef6c00" }
     ]
   },
   thalamus: {
-    name: "The Relay", realName: "Thalamus",
+    name: "Thalamus", nickname: "The Relay",
+    latin: "thalamus — inner chamber", color: "#f57c00",
+    tagline: "Sensory Relay · Consciousness · Signal Routing",
+    functions: ["Sensory Relay", "Consciousness", "Sleep-Wake Regulation", "Attention", "Signal Filtering"],
+    summary: `The thalamus is your brain's <strong>grand central station</strong>, a walnut-sized structure at the center of the brain that routes virtually every sensory signal (except smell) to the appropriate cortical destination. Every sight, sound, touch, and taste is sorted here before reaching your conscious awareness.<br><br>It also plays a central role in <strong>consciousness itself</strong>. When the thalamus is disrupted by anesthesia, deep sleep, or injury, awareness dims.`,
+    phd_note: `The thalamus comprises approximately 50 nuclei with highly specific functions. The lateral geniculate nucleus (LGN) processes visual information, medial geniculate for auditory, ventral posterolateral for somatosensory input. The pulvinar integrates multisensory information. The mediodorsal nucleus connects to PFC for executive function. The reticular nucleus filters and gates information. Thalamocortical loops oscillate at specific frequencies (alpha, theta, delta) corresponding to different conscious states.`,
+    adhd_insight: `The thalamus's filtering function, deciding what reaches consciousness, is directly relevant to sensory processing differences in AuDHD. When thalamic gating is altered, the brain doesn't automatically suppress irrelevant stimuli. Background noise that others filter out remains fully present. This isn't hypersensitivity as a character flaw. It's a thalamic filter set to <em>wide open</em>, receiving everything at once.`,
+    jung: {
+      functions: [],
+      rows: [
+        { code: "—", name: "Substrate, not function-specific", body: `The thalamus routes signals to wherever cognitive functions take place; it is not itself a function. Nardi's EEG could not directly read it (subcortical), but every function depends on it for sensory input. Thalamic filtering differences may underlie why some types feel "flooded" by stimuli more than others.`, types: [] }
+      ]
+    },
     role: "Messenger at the Center",
     also: "the size of a walnut, sitting at the heart of the brain",
-    color: "#f57c00", nickname: "The Relay",
-    tagline: "Sends messages everywhere",
-    opening: "Before you see, hear, or feel anything, the Relay has already decided who gets the message first.",
+    opening: `Before you see, hear, or feel anything, the Relay has already decided who gets the message first.`,
     story: `The Relay sits at the very center of your brain, a walnut-sized messenger who never rests. Every sight your eyes catch, every sound your ears pick up, every touch your skin notices, comes through her station before reaching the part of you that says <em>I noticed that.</em><br><br>She is the <strong>great connector</strong>. She knows which messages should go to the Cinema (vision), which should go to the Interpreter (sound and language), and which should be passed to the Commander for a decision.<br><br>She also helps decide whether you are awake or asleep. When she quiets down at night, your conscious mind goes with her. When she stirs in the morning, the world rushes back in.`,
-    functions: [
-      { label: "I.", text: "She <strong>routes</strong> every sense to the right part of the brain." },
-      { label: "II.", text: "She helps you stay <strong>awake</strong>, alert, and aware." },
-      { label: "III.", text: "She <strong>filters</strong> out signals that don't matter right now." }
+    storyFunctions: [
+      { label: "I.", text: `She <strong>routes</strong> every sense to the right part of the brain.` },
+      { label: "II.", text: `She helps you stay <strong>awake</strong>, alert, and aware.` },
+      { label: "III.", text: `She <strong>filters</strong> out signals that don't matter right now.` }
     ],
-    everyday: "When you suddenly notice the ticking clock you'd been ignoring, when you tune out a noisy classroom to focus on a friend, the Relay is the one turning dials behind the scenes.",
+    everyday: `When you suddenly notice the ticking clock you'd been ignoring, when you tune out a noisy classroom to focus on a friend, the Relay is the one turning dials behind the scenes.`,
     friends: [
       { name: "The Commander", color: "#5c6bc0", bond: "sends her important news" },
       { name: "The Sentinel", color: "#c2185b", bond: "gets fast warnings" },
       { name: "The Ancient Core", color: "#5d4037", bond: "shares the night shift" }
+    ],
+        connections: [
+      { name: "Prefrontal Cortex", color: "#5c6bc0" }, { name: "Amygdala", color: "#c2185b" },
+      { name: "Hippocampus", color: "#00acc1" }, { name: "Basal Ganglia", color: "#ef6c00" },
+      { name: "Brainstem", color: "#5d4037" }
     ]
   },
   hypothalamus: {
-    name: "The Regulator", realName: "Hypothalamus",
+    name: "Hypothalamus", nickname: "The Regulator",
+    latin: "hypothalamus — below the thalamus", color: "#7b1fa2",
+    tagline: "Homeostasis · Hunger · Hormones · Survival",
+    functions: ["Temperature Regulation", "Hunger & Thirst", "Hormone Release", "Sleep Cycles", "Fight-or-Flight"],
+    summary: `Smaller than a grape, the hypothalamus is the <strong>master regulator of the body's internal world</strong>. It monitors temperature, blood chemistry, hormones, and circadian rhythms continuously, making invisible adjustments thousands of times per day to keep you alive.<br><br>It controls the pituitary gland, making it the bridge between the <strong>nervous system and the endocrine system</strong>. When you feel hunger, thirst, sleepiness, or the heat of stress, the hypothalamus authored that message.`,
+    phd_note: `The hypothalamus contains discrete nuclei: suprachiasmatic nucleus (SCN), the master circadian clock, synchronized by light; paraventricular nucleus, stress response, oxytocin, vasopressin; lateral hypothalamus, hunger and reward; ventromedial nucleus, satiety; arcuate nucleus, appetite hormones. The HPA axis (hypothalamus → pituitary → adrenal glands) governs cortisol release. Disruption of the SCN underlies circadian rhythm disorders common in ADHD.`,
+    adhd_insight: `Circadian rhythm disruption in ADHD and AuDHD is not a matter of discipline or sleep hygiene alone, it's rooted in the hypothalamus. The SCN clock often runs on a <em>delayed phase</em>, making late nights feel natural and early mornings feel genuinely difficult. The hypothalamus also plays a role in interoception, sensing internal body states, explaining why hunger, fullness, and thirst signals can be easy to miss when hyperfocused.`,
+    jung: {
+      functions: [],
+      rows: [
+        { code: "—", name: "Substrate, not function-specific", body: `The hypothalamus regulates the body, not cognition. But its role in circadian rhythm, stress hormones, and arousal indirectly shapes which functions are easier to access at which times. Your <em>chronotype</em> (when you feel sharp) lives here.`, types: [] }
+      ]
+    },
     role: "Keeper of the Body's Balance",
     also: "smaller than a grape, but powerful beyond its size",
-    color: "#7b1fa2", nickname: "The Regulator",
-    tagline: "Keeps your body steady",
-    opening: "She works without thanks. Quiet, constant, holding the body in balance while you go about your day.",
+    opening: `She works without thanks. Quiet, constant, holding the body in balance while you go about your day.`,
     story: `The Regulator is tiny, smaller than a grape, but she is one of the most powerful characters in the kingdom. She keeps your <strong>body temperature steady</strong>, your hunger and thirst signals working, your sleep cycles turning, and your heart steady in the storm.<br><br>She is the bridge between your brain and the rest of your body. When the Sentinel sounds an alarm, the Regulator is the one who actually <strong>floods your body with the energy</strong> to run, fight, or freeze. She speaks the language of hormones, the chemical messengers that travel through your blood.<br><br>She also runs your <strong>inner clock</strong>. The reason you get sleepy at night and hungry around noon is the Regulator, working in the background, keeping time with the sun.`,
-    functions: [
-      { label: "I.", text: "She holds <strong>body temperature, hunger, and thirst</strong> in balance." },
-      { label: "II.", text: "She turns the <strong>stress response</strong> on and off." },
-      { label: "III.", text: "She runs your <strong>sleep clock</strong>, telling you when to rest and when to wake." }
+    storyFunctions: [
+      { label: "I.", text: `She holds <strong>body temperature, hunger, and thirst</strong> in balance.` },
+      { label: "II.", text: `She turns the <strong>stress response</strong> on and off.` },
+      { label: "III.", text: `She runs your <strong>sleep clock</strong>, telling you when to rest and when to wake.` }
     ],
-    everyday: "When your stomach growls before lunch, when you start shivering when it's cold, when you suddenly feel sleepy at the end of a long day, the Regulator is doing her quiet work.",
+    everyday: `When your stomach growls before lunch, when you start shivering when it's cold, when you suddenly feel sleepy at the end of a long day, the Regulator is doing her quiet work.`,
     friends: [
       { name: "The Sentinel", color: "#c2185b", bond: "passes her urgent signals" },
       { name: "The Relay", color: "#f57c00", bond: "shares deep brain space" },
       { name: "The Ancient Core", color: "#5d4037", bond: "works alongside her" }
+    ],
+        connections: [
+      { name: "Amygdala", color: "#c2185b" }, { name: "Thalamus", color: "#f57c00" },
+      { name: "Brainstem", color: "#5d4037" }, { name: "Hippocampus", color: "#00acc1" }
     ]
   },
   broca: {
-    name: "The Speaker", realName: "Broca's Area",
+    name: "Broca's Area", nickname: "The Speaker",
+    latin: "pars triangularis — triangular part", color: "#0288d1",
+    tagline: "Language Production · Speech · Syntax",
+    functions: ["Speech Production", "Language Comprehension", "Syntax Processing", "Working Memory for Language", "Verbal Fluency"],
+    summary: `Discovered in 1861 by Paul Broca when he observed a patient who could understand speech perfectly but could say almost nothing, Broca's Area is the <strong>engine of expressive language</strong>. Located in the left inferior frontal gyrus, it transforms thought into structured, grammatically coherent speech.<br><br>It also processes rhythm, prosody (the music of language), and written syntax, making it critical for reading as much as speaking.`,
+    phd_note: `Broca's area (BA44 and BA45) forms part of the inferior frontal gyrus. It is a node in the dorsal language stream (connecting to premotor cortex and Wernicke's area via the arcuate fasciculus) which handles syntactic structure. Functional neuroimaging shows activation during sentence comprehension, working memory for language, and even during sign language processing, suggesting its role is syntactic computation, not speech output per se. Broca's aphasia causes halting, telegraphic but meaningful speech with preserved comprehension.`,
+    adhd_insight: `Many ADHD and AuDHD individuals experience <em>word retrieval difficulties</em>, knowing exactly what they mean but being unable to summon the word in the moment. This isn't vocabulary failure. It's a disruption in the Broca-dorsal stream pipeline under cognitive load or time pressure. Voice memos and writing often bypass this bottleneck. The thought is there; the access route is congested.`,
+    jung: {
+      functions: ["Te", "Ti"],
+      rows: [
+        { code: "Te / Ti", name: "Thinking functions expressing outward", body: `Broca's area is the export channel for verbal logic. Whether <em>Te</em> is organizing a team or <em>Ti</em> is articulating a precise distinction, it leaves the mind through here. Word-retrieval struggles often have nothing to do with intelligence; the channel narrows under cognitive load or stress.`, types: ["ENTJ", "INTJ", "INTP", "ENTP", "ESTJ", "ISTJ"] }
+      ]
+    },
     role: "Voice of the Inner Kingdom",
     also: "named for the doctor who found him in 1861",
-    color: "#0288d1", nickname: "The Speaker",
-    tagline: "Turns thoughts into words",
-    opening: "He stands at the edge of the frontal lobe, weaving thoughts into sentences before they leave your lips.",
+    opening: `He stands at the edge of the frontal lobe, weaving thoughts into sentences before they leave your lips.`,
     story: `The Speaker is the part of you that <strong>turns thoughts into words</strong>. When you have an idea and your mouth opens to share it, he is the one stitching the sentence together, choosing each word and putting them in the right order.<br><br>He was discovered in 1861 by a French doctor named Paul Broca, who met a patient who could understand everything said to him but could only say one word in reply. The doctor realized this small region of the brain held the key to <strong>spoken language</strong>.<br><br>He is also why writing can sometimes feel easier than speaking. The Speaker can get backed up under pressure. When the right word will not come, he is searching the shelves but the door is jammed.`,
-    functions: [
-      { label: "I.", text: "He builds <strong>sentences</strong> from thoughts." },
-      { label: "II.", text: "He arranges words in the right <strong>grammar and order</strong>." },
-      { label: "III.", text: "He works closely with your <strong>writing</strong>, not just your speech." }
+    storyFunctions: [
+      { label: "I.", text: `He builds <strong>sentences</strong> from thoughts.` },
+      { label: "II.", text: `He arranges words in the right <strong>grammar and order</strong>.` },
+      { label: "III.", text: `He works closely with your <strong>writing</strong>, not just your speech.` }
     ],
-    everyday: "When the right word finally comes after a moment of searching, when you suddenly find the perfect way to explain something, the Speaker has done his work and opened the door.",
+    everyday: `When the right word finally comes after a moment of searching, when you suddenly find the perfect way to explain something, the Speaker has done his work and opened the door.`,
     friends: [
       { name: "The Interpreter", color: "#2e7d32", bond: "shares the language work" },
       { name: "The Commander", color: "#5c6bc0", bond: "tells him what to say" },
       { name: "The Choreographer", color: "#388e3c", bond: "helps move the mouth" }
+    ],
+        connections: [
+      { name: "Wernicke's Area", color: "#0288d1" }, { name: "Prefrontal Cortex", color: "#5c6bc0" },
+      { name: "Temporal Lobe", color: "#2e7d32" }, { name: "Motor Cortex", color: "#388e3c" }
     ]
   },
   corpus: {
-    name: "The Bridge", realName: "Corpus Callosum",
+    name: "Corpus Callosum", nickname: "The Bridge",
+    latin: "corpus callosum — tough body", color: "#00897b",
+    tagline: "Hemispheric Integration · Coordination · Transfer",
+    functions: ["Interhemispheric Communication", "Cognitive Integration", "Sensory Transfer", "Motor Coordination", "Emotional Processing"],
+    summary: `The corpus callosum is the <strong>great information highway</strong> between the brain's two hemispheres, a thick band of roughly 200 million nerve fibers arching through the center of the brain. Every time your logical left hemisphere needs to know what your creative right hemisphere is doing, the signal travels here.<br><br>Without it (as studied in "split-brain" patients), the two hemispheres can literally develop different opinions about the same question, unaware of each other.`,
+    phd_note: `The corpus callosum is the largest white matter structure in the brain, subdivided into genu (frontal connections), body (parietal connections), isthmus, and splenium (occipital, temporal connections). Transfer time across it is approximately 5-10ms. DTI (diffusion tensor imaging) studies reveal reduced microstructural integrity (lower fractional anisotropy) in ADHD and autism brains in specific regions of the CC, particularly the genu and splenium. Partial agenesis of the corpus callosum can occur without obvious cognitive symptoms, revealing remarkable compensatory plasticity.`,
+    adhd_insight: `Research on AuDHD brains shows measurable differences in corpus callosum microstructure. This contributes to the experience of <em>cognitive inconsistency</em>, performing brilliantly one day, struggling the next. The integration between hemispheres is less automatic, meaning the AuDHD brain has to work harder to synthesize information that neurotypical brains coordinate effortlessly. It also means that when the right conditions align, the same brain can be extraordinary.`,
+    jung: {
+      functions: [],
+      rows: [
+        { code: "—", name: "The function integrator", body: `Each cognitive function tends to recruit a hemisphere more than the other (Te/Ti, Se/Si lean left; Ni/Ne and right-Fe more right-leaning in Nardi's data). The corpus callosum is what allows two functions to cooperate at once. Reduced integration here may relate to the felt experience of "my modes don't talk to each other."`, types: [] }
+      ]
+    },
     role: "Highway Between Two Worlds",
     also: "two hundred million tiny fibers stretched across the brain",
-    color: "#00897b", nickname: "The Bridge",
-    tagline: "Connects left and right",
-    opening: "Your brain has two halves. Without the Bridge, they would live alone, never knowing the other was there.",
+    opening: `Your brain has two halves. Without the Bridge, they would live alone, never knowing the other was there.`,
     story: `The Bridge is made of <strong>two hundred million tiny fibers</strong>, arching from one side of the brain to the other. It is the great highway between the left half and the right half. Without it, the two sides could not share what they know.<br><br>The left side is the logical, language-loving half. The right side is the creative, big-picture half. The Bridge is what allows them to <strong>work together</strong>, what allows you to feel a song with the right side while singing the lyrics with the left.<br><br>When scientists have studied people whose Bridge was damaged or surgically separated, something strange happened. The two halves of their brain developed <strong>different opinions</strong>, sometimes about the same question. This is how important the Bridge truly is.`,
-    functions: [
-      { label: "I.", text: "He carries messages between the <strong>left and right hemispheres</strong>." },
-      { label: "II.", text: "He helps the two sides <strong>work as one</strong>." },
-      { label: "III.", text: "He allows your <strong>logical and creative</strong> mind to speak the same language." }
+    storyFunctions: [
+      { label: "I.", text: `He carries messages between the <strong>left and right hemispheres</strong>.` },
+      { label: "II.", text: `He helps the two sides <strong>work as one</strong>.` },
+      { label: "III.", text: `He allows your <strong>logical and creative</strong> mind to speak the same language.` }
     ],
-    everyday: "When you sing along to a song while also feeling the emotion behind it, when you solve a math problem and admire the elegance at the same time, the Bridge is carrying the conversation.",
+    everyday: `When you sing along to a song while also feeling the emotion behind it, when you solve a math problem and admire the elegance at the same time, the Bridge is carrying the conversation.`,
     friends: [
       { name: "The Commander", color: "#5c6bc0", bond: "uses the Bridge daily" },
       { name: "The Navigator", color: "#1565c0", bond: "connects across him" },
       { name: "The Cinema", color: "#6a1b9a", bond: "shares left and right views" }
+    ],
+        connections: [
+      { name: "Prefrontal Cortex", color: "#5c6bc0" }, { name: "Parietal Lobe", color: "#1565c0" },
+      { name: "Temporal Lobe", color: "#2e7d32" }, { name: "Occipital Lobe", color: "#6a1b9a" }
     ]
   },
   insula: {
-    name: "The Body-Reader", realName: "Insula",
+    name: "Insula", nickname: "The Body-Reader",
+    latin: "insula — island", color: "#e64a19",
+    tagline: "Interoception · Empathy · Body Awareness · Disgust",
+    functions: ["Interoception", "Empathy", "Pain Processing", "Disgust", "Self-Awareness", "Addiction Circuits"],
+    summary: `The insula is a <strong>hidden island of cortex</strong>, tucked deep within the lateral sulcus, invisible from the outside. It is the seat of <em>interoception</em>, the awareness of the body's internal state. Heartbeat, fullness, fatigue, nausea, the physical sense of an emotion in your chest or stomach, all of these are insula communications.<br><br>It also underlies empathy: when you feel someone else's pain, the insula fires as if it were your own.`,
+    phd_note: `The insula contains anterior (agranular), middle (dysgranular), and posterior (granular) divisions. The posterior insula receives somatosensory and visceral inputs. The anterior insula integrates these with emotional and cognitive context, serving as a convergence zone for conscious body awareness. Craig (2009) proposed the anterior insula as the primary site of the "sentient self", the physical feeling of being alive. Insula activity correlates with empathic accuracy, self-recognition, and addiction (craving states show intense insula activation).`,
+    adhd_insight: `Interoceptive differences are profound in AuDHD. The insula-mediated awareness of hunger, thirst, physical discomfort, and emotional states often doesn't reach conscious threshold until the signal is urgent. This is why the ADHD or autistic person skips meals without noticing, doesn't recognize they're overwhelmed until they're past the edge, or struggles to identify what they're feeling. It's not emotional unavailability. The insula is sending signals on a frequency that competes with louder external input.`,
+    jung: {
+      functions: ["Fi"],
+      rows: [
+        { code: "Fi", name: "Introverted Feeling, the felt-sense layer", body: `If Fi is the function that knows "this is right for me" or "this is off," the insula is the somatic engine of that knowing. It reads the body's inner state and translates it into the gut-level values signal. <strong>Strongly developed insula awareness is common in Fi-dominant types and in many AuDHD individuals regardless of type.</strong>`, types: ["INFP", "ISFP", "ENFP", "ESFP"] }
+      ]
+    },
     role: "Listener of the Inside",
     also: "hidden island of cortex, folded out of sight",
-    color: "#e64a19", nickname: "The Body-Reader",
-    tagline: "Feels what your body feels",
-    opening: "She listens to a quieter conversation, the one your body is always having with itself.",
+    opening: `She listens to a quieter conversation, the one your body is always having with itself.`,
     story: `The Body-Reader is hidden, tucked deep inside a fold of the brain like a <strong>secret island</strong>. While the rest of the brain is busy with the outside world, she listens inward. She feels your heartbeat. She knows when you're hungry, full, tired, sick, or about to cry.<br><br>She is also the home of <strong>empathy</strong>. When you watch a friend get hurt and feel a flinch in your own body, that is the Body-Reader firing as if it were happening to you. She helps you understand what others are feeling by translating it through your own physical sensations.<br><br>For some people, her signals come in clearly. For others, they arrive quietly or all at once. There is no wrong way to feel. The Body-Reader can be <strong>trained</strong>, slowly, to listen more closely.`,
-    functions: [
-      { label: "I.", text: "She tells you what your <strong>body</strong> is feeling on the inside." },
-      { label: "II.", text: "She helps you feel <strong>empathy</strong> for others." },
-      { label: "III.", text: "She processes <strong>physical sensations</strong> like pain, taste, and disgust." }
+    storyFunctions: [
+      { label: "I.", text: `She tells you what your <strong>body</strong> is feeling on the inside.` },
+      { label: "II.", text: `She helps you feel <strong>empathy</strong> for others.` },
+      { label: "III.", text: `She processes <strong>physical sensations</strong> like pain, taste, and disgust.` }
     ],
-    everyday: "When your stomach tightens before a hard conversation, when you tear up watching someone else cry, when you suddenly realize you're starving, the Body-Reader is the one delivering the message.",
+    everyday: `When your stomach tightens before a hard conversation, when you tear up watching someone else cry, when you suddenly realize you're starving, the Body-Reader is the one delivering the message.`,
     friends: [
       { name: "The Sentinel", color: "#c2185b", bond: "shares emotional signals" },
       { name: "The Mediator", color: "#ad1457", bond: "watches inside with her" },
       { name: "The Interpreter", color: "#2e7d32", bond: "translates feeling into meaning" }
+    ],
+        connections: [
+      { name: "Amygdala", color: "#c2185b" }, { name: "Anterior Cingulate", color: "#ad1457" },
+      { name: "Temporal Lobe", color: "#2e7d32" }, { name: "Prefrontal Cortex", color: "#5c6bc0" }
     ]
   },
   brainstem: {
-    name: "The Ancient Core", realName: "Brainstem",
+    name: "Brainstem", nickname: "The Ancient Core",
+    latin: "truncus cerebri — trunk of the brain", color: "#5d4037",
+    tagline: "Survival · Breathing · Heart Rate · Arousal",
+    functions: ["Breathing Regulation", "Heart Rate", "Consciousness & Arousal", "Reflexes", "Sleep-Wake Transitions", "Cranial Nerve Functions"],
+    summary: `The brainstem is the <strong>oldest brain</strong>, evolutionarily ancient code that manages the baseline of being alive. Heart rate, breathing, blood pressure, swallowing, eye movements, and the basic arousal state of consciousness are all brainstem territory.<br><br>It connects the brain to the spinal cord and contains the <strong>reticular activating system (RAS)</strong>, the filter that decides how alert and awake you are at any given moment. Every cup of coffee you've ever drunk worked by influencing the RAS.`,
+    phd_note: `The brainstem consists of the midbrain (mesencephalon), pons, and medulla oblongata. The midbrain contains the superior and inferior colliculi (reflexive visual and auditory responses), substantia nigra (dopamine production: degeneration causes Parkinson's), and ventral tegmental area (VTA, reward circuitry dopamine). The pons contains the locus coeruleus (norepinephrine), raphe nuclei (serotonin), and respiratory pacemakers. The medulla controls cardiac and vasomotor centers. The ascending reticular activating system (ARAS) projects widely to the thalamus and cortex.`,
+    adhd_insight: `The dopamine-producing neurons of the substantia nigra and VTA in the brainstem form the beginning of the dopaminergic pathways disrupted in ADHD. The mesolimbic (VTA → nucleus accumbens) and mesocortical (VTA → PFC) pathways explain both the motivation deficit and the executive function deficit in ADHD, they originate in the same cluster of cells in the brainstem. Understanding ADHD means understanding that its deepest roots run all the way down here.`,
+    jung: {
+      functions: [],
+      rows: [
+        { code: "—", name: "Substrate, beneath function", body: `Below cognitive function entirely. But the brainstem's dopamine and norepinephrine systems set the baseline arousal that determines whether <em>any</em> function can engage. ADHD's dopamine differences originate here, which is why no cognitive function feels "clean" without the right arousal level.`, types: [] }
+      ]
+    },
     role: "Oldest Worker of the Kingdom",
     also: "the deepest, oldest part of the brain, connecting it to the body",
-    color: "#5d4037", nickname: "The Ancient Core",
-    tagline: "Keeps you alive without trying",
-    opening: "He was here first. Before language, before memory, before you had a name. He was running the breath of life.",
+    opening: `He was here first. Before language, before memory, before you had a name. He was running the breath of life.`,
     story: `The Ancient Core is the oldest part of your brain, the part you share with reptiles and birds and almost every animal alive. He does the work you never have to think about: <strong>breathing, heartbeat, blood pressure, swallowing, waking, sleeping</strong>.<br><br>He sits at the very bottom of the brain, where it connects to your spine. He is the bridge between your thinking mind and your living body. Every signal that travels between brain and body passes through him.<br><br>He also runs the <strong>dial that decides how alert you are</strong>. When you wake up slowly in the morning or feel your eyelids getting heavy at night, the Ancient Core is turning a knob, raising or lowering the volume of your awareness.`,
-    functions: [
-      { label: "I.", text: "He runs your <strong>breathing, heartbeat,</strong> and other automatic life functions." },
-      { label: "II.", text: "He controls how <strong>awake or sleepy</strong> you feel." },
-      { label: "III.", text: "He is the <strong>passageway</strong> between your brain and your body." }
+    storyFunctions: [
+      { label: "I.", text: `He runs your <strong>breathing, heartbeat,</strong> and other automatic life functions.` },
+      { label: "II.", text: `He controls how <strong>awake or sleepy</strong> you feel.` },
+      { label: "III.", text: `He is the <strong>passageway</strong> between your brain and your body.` }
     ],
-    everyday: "When you stay alive through a deep sleep, when you wake up before the alarm, when caffeine makes you feel sharp, the Ancient Core is the one quietly answering.",
+    everyday: `When you stay alive through a deep sleep, when you wake up before the alarm, when caffeine makes you feel sharp, the Ancient Core is the one quietly answering.`,
     friends: [
       { name: "The Relay", color: "#f57c00", bond: "passes his signals up" },
       { name: "The Choreographer", color: "#388e3c", bond: "works with him on movement" },
       { name: "The Regulator", color: "#7b1fa2", bond: "shares the body's care" }
+    ],
+        connections: [
+      { name: "Thalamus", color: "#f57c00" }, { name: "Cerebellum", color: "#388e3c" },
+      { name: "Hypothalamus", color: "#7b1fa2" }, { name: "Basal Ganglia", color: "#ef6c00" }
     ]
   },
   parietal: {
-    name: "The Navigator", realName: "Parietal Lobe",
+    name: "Parietal Lobe", nickname: "The Navigator",
+    latin: "lobus parietalis — wall lobe", color: "#1565c0",
+    tagline: "Spatial Processing · Sensory Integration · Mathematics",
+    functions: ["Spatial Orientation", "Sensory Integration", "Body Image", "Mathematical Reasoning", "Attention Direction", "Tool Use"],
+    summary: `The parietal lobe sits between the frontal and occipital lobes and serves as the brain's <strong>spatial intelligence center</strong>. It integrates information from all the senses, touch, vision, sound, into a unified, navigable map of the world and your body's place within it.<br><br>The right parietal lobe handles visuospatial processing (mentally rotating a 3D object); the left handles language-linked spatial tasks like reading a map. Together they create your <strong>sense of where everything is, including you</strong>.`,
+    phd_note: `The parietal lobe contains the primary somatosensory cortex (postcentral gyrus, touch, temperature, pain), superior parietal lobule (visuospatial attention, tool use), and inferior parietal lobule including the angular gyrus (language, reading, number processing) and supramarginal gyrus (phonological awareness). The right inferior parietal cortex is critical for sustained attention; damage causes hemispatial neglect, the complete unawareness of one side of space. The parietal cortex is where dorsal "where" visual stream terminates.`,
+    adhd_insight: `Attention dysregulation in ADHD involves parietal-frontal networks. The right parietal cortex's role in orienting attention explains why ADHD brains can lock attention (hyperfocus) just as readily as they lose it, it's not a volume problem, it's a steering problem. Spatial disorganization, difficulty reading body language (a spatial-social task), and navigation challenges in AuDHD also trace to parietal processing differences.`,
+    jung: {
+      functions: ["Ne", "Se"],
+      rows: [
+        { code: "Ne", name: "Extraverted Intuition", body: `<em>Ne</em>'s cross-context pattern jumping (one idea sparking five tangents) involves parietal-frontal networks doing spatial-conceptual leaping. The parietal lobe maps space; <em>Ne</em> maps conceptual space the same way.`, types: ["ENFP", "ENTP", "INFP", "INTP"] },
+        { code: "Se", name: "Extraverted Sensing", body: `The parietal lobe's spatial-awareness and body-in-space tracking is core <em>Se</em> infrastructure. Reading a room, catching a ball, knowing where the exits are without looking.`, types: ["ESFP", "ESTP", "ISFP", "ISTP"] }
+      ]
+    },
     role: "Mapmaker of Space",
     also: "the wall of the brain that watches the world's shape",
-    color: "#1565c0", nickname: "The Navigator",
-    tagline: "Knows where everything is",
-    opening: "She holds the map of the world and the map of you inside it.",
+    opening: `She holds the map of the world and the map of you inside it.`,
     story: `The Navigator sits on top and toward the back of your brain. Her work is to know <strong>where everything is</strong>, including where your own body is in space. When you reach for something with your eyes closed and your hand lands exactly where you wanted, she made that possible.<br><br>She also gathers information from <strong>all your senses</strong> and weaves it together. Touch, sight, sound, the position of your limbs, all of it becomes one clear picture of <em>here I am, in this place, right now</em>.<br><br>She helps with <strong>math, reading maps, and understanding shapes</strong>. When you mentally rotate a puzzle piece to see if it fits, or imagine walking through your house in your mind, the Navigator is drawing the path.`,
-    functions: [
-      { label: "I.", text: "She knows where your <strong>body</strong> is in space without looking." },
-      { label: "II.", text: "She combines <strong>all your senses</strong> into one experience." },
-      { label: "III.", text: "She helps with <strong>shapes, maps, and math</strong>." }
+    storyFunctions: [
+      { label: "I.", text: `She knows where your <strong>body</strong> is in space without looking.` },
+      { label: "II.", text: `She combines <strong>all your senses</strong> into one experience.` },
+      { label: "III.", text: `She helps with <strong>shapes, maps, and math</strong>.` }
     ],
-    everyday: "When you walk through a dark room without bumping into furniture, when you turn a Tetris piece in your mind, when you find your way home without thinking, the Navigator is leading.",
+    everyday: `When you walk through a dark room without bumping into furniture, when you turn a Tetris piece in your mind, when you find your way home without thinking, the Navigator is leading.`,
     friends: [
       { name: "The Cinema", color: "#6a1b9a", bond: "uses what she sees" },
       { name: "The Interpreter", color: "#2e7d32", bond: "shares sensory work" },
       { name: "The Commander", color: "#5c6bc0", bond: "asks her for directions" }
+    ],
+        connections: [
+      { name: "Prefrontal Cortex", color: "#5c6bc0" }, { name: "Occipital Lobe", color: "#6a1b9a" },
+      { name: "Temporal Lobe", color: "#2e7d32" }, { name: "Thalamus", color: "#f57c00" }
     ]
   },
   occipital: {
-    name: "The Cinema", realName: "Occipital Lobe",
+    name: "Occipital Lobe", nickname: "The Cinema",
+    latin: "lobus occipitalis — back-of-head lobe", color: "#6a1b9a",
+    tagline: "Vision · Visual Processing · Pattern Recognition",
+    functions: ["Primary Vision", "Color Perception", "Motion Detection", "Pattern Recognition", "Visual Memory", "Face Processing"],
+    summary: `The entire back of your brain is devoted to vision. The occipital lobe contains the <strong>primary visual cortex (V1)</strong>, which receives raw light signals from the retina and begins the extraordinary process of constructing the visual world.<br><br>From V1, visual information splits into two streams: the ventral "what" pathway (identifying objects, faces, words) heading toward the temporal lobe, and the dorsal "where" pathway (location, motion, navigation) heading toward the parietal lobe.`,
+    phd_note: `The occipital lobe contains V1 through V5 processing hierarchy. V1 (primary visual cortex) maps the visual field retinotopically, responds to orientation and spatial frequency. V4 processes color and form; V5/MT processes motion. The ventral temporal pathway handles object recognition (fusiform face area for faces; visual word form area for reading). The dorsal occipital-parietal pathway supports action-directed vision. Lesions to specific areas produce agnosias, inability to recognize objects, faces, or colors, with intact visual acuity.`,
+    adhd_insight: `Visual processing strengths in ADHD and AuDHD are well-documented, peripheral attention, visual pattern recognition, detail orientation. The occipital system processes visual input fully and richly. What varies is the <em>filtering and directing</em> of that input by frontal-parietal networks. Visual learners with AuDHD often find that spatial and visual encoding (mind maps, color coding, diagrams) dramatically outperforms verbal-sequential instruction because the occipital system is doing its job beautifully.`,
+    jung: {
+      functions: ["Se"],
+      rows: [
+        { code: "Se", name: "Extraverted Sensing", body: `<em>Se</em> is live, in-the-moment perception. The occipital lobe is the visual engine for that perception. Nardi observed that <strong>Se-dominant types show notable occipital activation patterns</strong>, consistent with their tendency to read the visual present quickly and accurately.`, types: ["ESFP", "ESTP", "ISFP", "ISTP"] }
+      ]
+    },
     role: "Painter of Everything You See",
     also: "the entire back of the brain devoted to vision",
-    color: "#6a1b9a", nickname: "The Cinema",
-    tagline: "Builds the world you see",
-    opening: "The world out there is light and shadow. The Cinema is the one who turns it into a picture.",
+    opening: `The world out there is light and shadow. The Cinema is the one who turns it into a picture.`,
     story: `The Cinema is the entire back of your brain, devoted to <strong>only one job: seeing</strong>. When light enters your eyes, it is just raw signal. Useless. The Cinema is the one who takes those signals and <strong>builds the image</strong> you actually see, complete with color, depth, motion, and meaning.<br><br>She does her work in layers. One layer notices edges. Another notices color. Another notices motion. Another stitches them together. Another recognizes faces. By the time you "see" your best friend across the room, the Cinema has done <strong>more work in a fraction of a second</strong> than a movie studio does in a year.<br><br>She is the reason that closing your eyes and imagining something can feel almost real. She paints inner pictures as easily as outer ones.`,
-    functions: [
-      { label: "I.", text: "She turns raw light into the <strong>world you see</strong>." },
-      { label: "II.", text: "She recognizes <strong>colors, shapes, faces, and motion</strong>." },
-      { label: "III.", text: "She paints <strong>imagined pictures</strong> when you close your eyes." }
+    storyFunctions: [
+      { label: "I.", text: `She turns raw light into the <strong>world you see</strong>.` },
+      { label: "II.", text: `She recognizes <strong>colors, shapes, faces, and motion</strong>.` },
+      { label: "III.", text: `She paints <strong>imagined pictures</strong> when you close your eyes.` }
     ],
-    everyday: "When you spot your friend in a crowd, when a sunset takes your breath away, when you remember someone's face perfectly, the Cinema is showing her work.",
+    everyday: `When you spot your friend in a crowd, when a sunset takes your breath away, when you remember someone's face perfectly, the Cinema is showing her work.`,
     friends: [
       { name: "The Navigator", color: "#1565c0", bond: "tells her where things are" },
       { name: "The Interpreter", color: "#2e7d32", bond: "names what she sees" },
       { name: "The Relay", color: "#f57c00", bond: "delivers her raw light signals" }
+    ],
+        connections: [
+      { name: "Parietal Lobe", color: "#1565c0" }, { name: "Temporal Lobe", color: "#2e7d32" },
+      { name: "Thalamus", color: "#f57c00" }
     ]
   },
   temporal: {
-    name: "The Interpreter", realName: "Temporal Lobe",
+    name: "Temporal Lobe", nickname: "The Interpreter",
+    latin: "lobus temporalis — temple lobe", color: "#2e7d32",
+    tagline: "Language · Face Recognition · Auditory Processing · Meaning",
+    functions: ["Auditory Processing", "Language Comprehension", "Face Recognition", "Semantic Memory", "Emotion Recognition", "Music Processing"],
+    summary: `The temporal lobe sits along the sides of the brain, roughly behind your temples, and is responsible for <strong>understanding the world's meaning</strong>, language, faces, voices, and the semantic content of memory.<br><br>Wernicke's area, tucked in the posterior superior temporal gyrus, allows you to understand language. The fusiform gyrus lets you recognize faces instantly. The superior temporal sulcus processes voices and biological motion. This is the lobe that turns sound into sense.`,
+    phd_note: `Wernicke's area (BA22) processes phonological and semantic content; damage causes fluent but meaningless speech (Wernicke's aphasia). The fusiform face area (FFA), in the inferior temporal lobe, is highly specialized for face recognition. The parahippocampal gyrus links the temporal lobe to hippocampal memory. The superior temporal sulcus (STS) integrates auditory-visual information and responds to biological motion, theory of mind, and voice processing, heavily implicated in social cognition and autism research. Temporal lobe epilepsy produces intense emotional and deja-vu phenomena.`,
+    adhd_insight: `Auditory processing differences in AuDHD, difficulty following verbal instructions, mishearing words, losing speech in noisy environments, largely arise in the temporal lobe's integration systems. The brain is hearing fine; it's sorting the stream under cognitive load that becomes challenging. The temporal lobe's face and voice processing centers also relate to the social exhaustion autistic individuals experience, these systems are working intensely to decode social information that arrives implicitly for neurotypical brains.`,
+    jung: {
+      functions: ["Si", "Fe"],
+      rows: [
+        { code: "Si (left temporal)", name: "Stored auditory and language detail", body: `The left temporal lobe's role in auditory memory and language stores the kind of detailed, sequential information <em>Si</em> draws from. "I remember exactly what they said."`, types: ["ISTJ", "ISFJ"] },
+        { code: "Fe (right temporal)", name: "Reading social and emotional signal", body: `The right temporal lobe processes voices, faces, biological motion, the raw material of <em>Fe</em>'s social attunement. This is also why right-temporal differences are central in autism research; the social-decoding hardware is wired differently, not absent.`, types: ["ENFJ", "ESFJ"] }
+      ]
+    },
     role: "Translator of Meaning",
     also: "stretching along the side of the brain, near the temples",
-    color: "#2e7d32", nickname: "The Interpreter",
-    tagline: "Understands what things mean",
-    opening: "He stands between the sounds of the world and the meaning they carry. Without him, language would be noise.",
+    opening: `He stands between the sounds of the world and the meaning they carry. Without him, language would be noise.`,
     story: `The Interpreter is the part of you that <strong>understands what things mean</strong>. He recognizes voices, faces, songs, and words. He turns sound into language and sights into named things.<br><br>When someone speaks to you, the words enter as sound. The Interpreter is the one who <strong>understands</strong> them, who knows that "apple" means a round red fruit. He is also why you can recognize a song after only two notes, why a face in a crowd suddenly feels familiar, why a smell from your childhood can bring everything back at once.<br><br>He works closely with the Archivist, since meaning and memory are deeply intertwined. He is also the home of much of what we call <strong>social understanding</strong>, recognizing tone of voice, reading what someone really means under their words.`,
-    functions: [
-      { label: "I.", text: "He <strong>understands</strong> language, voices, and music." },
-      { label: "II.", text: "He recognizes <strong>faces and familiar things</strong>." },
-      { label: "III.", text: "He picks up on <strong>tone</strong>, mood, and what someone really means." }
+    storyFunctions: [
+      { label: "I.", text: `He <strong>understands</strong> language, voices, and music.` },
+      { label: "II.", text: `He recognizes <strong>faces and familiar things</strong>.` },
+      { label: "III.", text: `He picks up on <strong>tone</strong>, mood, and what someone really means.` }
     ],
-    everyday: "When you hear a song after years and the words come back, when you recognize a friend's voice on the phone before they say their name, the Interpreter is the one connecting sound to meaning.",
+    everyday: `When you hear a song after years and the words come back, when you recognize a friend's voice on the phone before they say their name, the Interpreter is the one connecting sound to meaning.`,
     friends: [
       { name: "The Archivist", color: "#00acc1", bond: "shares the library" },
       { name: "The Speaker", color: "#0288d1", bond: "trades language work" },
       { name: "The Sentinel", color: "#c2185b", bond: "warns of tone shifts" }
+    ],
+        connections: [
+      { name: "Hippocampus", color: "#00acc1" }, { name: "Amygdala", color: "#c2185b" },
+      { name: "Broca's Area", color: "#0288d1" }, { name: "Parietal Lobe", color: "#1565c0" },
+      { name: "Occipital Lobe", color: "#6a1b9a" }
     ]
   },
   cingulate: {
-    name: "The Mediator", realName: "Cingulate Cortex",
+    name: "Cingulate Cortex", nickname: "The Mediator",
+    latin: "cortex cingularis — belt cortex", color: "#ad1457",
+    tagline: "Conflict Monitoring · Emotion · Pain · Decision-Making",
+    functions: ["Error Detection", "Conflict Monitoring", "Emotional Regulation", "Pain Processing", "Decision Making", "Empathy"],
+    summary: `The cingulate cortex arches like a collar over the corpus callosum, forming the innermost wall of the cortex. The <strong>anterior cingulate cortex (ACC)</strong> is the brain's conflict detector, it fires when your automatic impulse and your considered judgment are pointing in different directions.<br><br>When you're making a difficult moral choice, the ACC is the voice of internal tension. It also processes physical and social pain through remarkably overlapping circuits, which is why <strong>rejection genuinely hurts</strong>, neurologically.`,
+    phd_note: `The cingulate cortex contains anterior (ACC), mid-cingulate (MCC), and posterior (PCC) divisions. The ACC subdivides into cognitive (dACC, conflict monitoring, error signals, executive control) and affective (rACC, emotional regulation, social pain, placebo response) components. The dACC is part of the salience network alongside the anterior insula, acting as the brain's interrupt signal. The PCC anchors the default mode network (self-referential thought, mind-wandering). ACC-PFC connectivity is disrupted in depression and ADHD.`,
+    adhd_insight: `The ACC's conflict monitoring function is central to impulse control, detecting the tension between "I want to do X" and "I should do Y." Underactivation of the dACC in ADHD means this signal fires weakly or late. But the affective ACC's exquisite sensitivity to social pain in AuDHD means that even while executive conflict monitoring is quieter, emotional pain signals are often amplified. The ACC mediates both patterns simultaneously.`,
+    jung: {
+      functions: ["Fe", "Fi"],
+      rows: [
+        { code: "Fe / Fi", name: "The ethical-emotional monitor", body: `The cingulate watches for conflict between what you want and what is right, between self and group. Both <em>Fe</em> (group harmony) and <em>Fi</em> (personal values) recruit it. Hyperactivity here may underlie the strong moral-emotional sensitivity many feeling-dominant types describe.`, types: ["INFP", "INFJ", "ENFJ", "ENFP", "ISFJ", "ESFJ"] }
+      ]
+    },
     role: "Watcher of the Inner Tug-of-War",
     also: "a belt of cortex arched over the bridge",
-    color: "#ad1457", nickname: "The Mediator",
-    tagline: "Notices when you're conflicted",
-    opening: "She lives where two paths meet inside you, watching for the moment you must choose.",
+    opening: `She lives where two paths meet inside you, watching for the moment you must choose.`,
     story: `The Mediator lives in the middle of your brain, arched like a belt over the Bridge. Her job is to <strong>notice when two parts of you disagree</strong>. When you want to eat the cookie but also want to wait until after dinner, she is the one feeling the tension.<br><br>She is also deeply involved in feeling <strong>emotional pain</strong>, including the pain of being left out, ignored, or rejected. Scientists discovered that the same area of the brain that lights up when you stub your toe also lights up when you feel socially hurt. <em>Rejection actually hurts</em>, and the Mediator is one of the reasons why.<br><br>She helps you <strong>care about what is right</strong>. When you feel that twinge of "I shouldn't have done that," she is the one whispering it.`,
-    functions: [
-      { label: "I.", text: "She notices when two parts of you are in <strong>conflict</strong>." },
-      { label: "II.", text: "She processes <strong>emotional pain</strong> like rejection or guilt." },
-      { label: "III.", text: "She helps you <strong>care</strong> about right and wrong." }
+    storyFunctions: [
+      { label: "I.", text: `She notices when two parts of you are in <strong>conflict</strong>.` },
+      { label: "II.", text: `She processes <strong>emotional pain</strong> like rejection or guilt.` },
+      { label: "III.", text: `She helps you <strong>care</strong> about right and wrong.` }
     ],
-    everyday: "When you feel torn between two choices, when being left out actually feels like a physical ache, when your conscience speaks up, the Mediator is at work.",
+    everyday: `When you feel torn between two choices, when being left out actually feels like a physical ache, when your conscience speaks up, the Mediator is at work.`,
     friends: [
       { name: "The Commander", color: "#5c6bc0", bond: "delivers her concerns" },
       { name: "The Sentinel", color: "#c2185b", bond: "shares the alarm system" },
       { name: "The Body-Reader", color: "#e64a19", bond: "watches inside together" }
+    ],
+        connections: [
+      { name: "Prefrontal Cortex", color: "#5c6bc0" }, { name: "Amygdala", color: "#c2185b" },
+      { name: "Hippocampus", color: "#00acc1" }, { name: "Insula", color: "#e64a19" }
     ]
   },
   basal: {
-    name: "The Habit Forge", realName: "Basal Ganglia",
+    name: "Basal Ganglia", nickname: "The Habit Forge",
+    latin: "nuclei basales — base nuclei", color: "#ef6c00",
+    tagline: "Habit Formation · Reward · Motor Initiation · Motivation",
+    functions: ["Habit Formation", "Reward Processing", "Dopamine Modulation", "Motor Initiation", "Goal-Directed Behavior", "Action Selection"],
+    summary: `The basal ganglia are a cluster of nuclei deep within the cerebral hemispheres, forming the neural substrate of <strong>habit, reward, and action selection</strong>. They decide which behaviors get reinforced, which get suppressed, and which become automatic.<br><br>Every habit you've ever formed ran through the striatum. Every reward you've anticipated, or failed to feel, involved dopamine signaling here. The basal ganglia are the brain's <strong>motivation engine and pattern automator</strong>.`,
+    phd_note: `The basal ganglia include the striatum (caudate nucleus and putamen), globus pallidus (internal and external), subthalamic nucleus, and substantia nigra. The striatum receives dopamine from the substantia nigra (nigrostriatal pathway, motor control) and VTA (mesolimbic/mesocortical, reward, motivation). Two competing pathways: the direct pathway (facilitates action, "go") and indirect pathway (suppresses action, "stop") must be precisely balanced for fluid voluntary movement and decision-making. ADHD involves dopamine deficiency in the striato-frontal circuits.`,
+    adhd_insight: `ADHD is, at its metabolic core, a dopamine dysregulation disorder centered on basal ganglia-frontal circuits. The striatum's reward prediction system is calibrated differently, requiring higher novelty, higher interest, or higher stakes to generate the dopamine signal that normal tasks would provide a neurotypical brain. This is why ADHD doesn't mean someone <em>can't</em> focus, it means they focus when dopamine is present. The Habit Forge needs higher-grade fuel.`,
+    jung: {
+      functions: ["Si"],
+      rows: [
+        { code: "Si (procedural)", name: "Habit, pattern, reward", body: `The basal ganglia automate repeated behavior, an <em>Si-flavored</em> process at the body level. They also gate motivation through dopamine. ADHD's reduced dopamine signaling here is why <em>any</em> cognitive function struggles to engage without sufficient interest or novelty, regardless of type.`, types: ["ISTJ", "ISFJ", "ESTJ", "ESFJ"] }
+      ]
+    },
     role: "Maker of Patterns and Habits",
     also: "a cluster of nuclei buried deep, never resting",
-    color: "#ef6c00", nickname: "The Habit Forge",
-    tagline: "Builds your habits",
-    opening: "He repeats. And repeats. And repeats. Until the thing you once had to think about becomes who you are.",
+    opening: `He repeats. And repeats. And repeats. Until the thing you once had to think about becomes who you are.`,
     story: `The Habit Forge is a cluster of busy workers deep in the brain. His job is to take <strong>repeated behaviors</strong> and turn them into automatic habits. Brushing your teeth, tying your shoes, scrolling your phone, all of it lives here once it's been repeated enough times.<br><br>He is also the part of you that <strong>feels reward</strong>. When something feels good, when you want to do it again, he is the one releasing the chemical called dopamine, the brain's signal that says <em>this matters, do it again.</em><br><br>This is why habits can be so hard to break. The Habit Forge has spent years rehearsing them. Building new habits is also slow at first, because he has to <strong>learn the new pattern</strong> from scratch. But once a habit is forged, it is almost free to run.`,
-    functions: [
-      { label: "I.", text: "He turns repeated actions into <strong>habits</strong>." },
-      { label: "II.", text: "He delivers <strong>rewards</strong> when something feels good." },
-      { label: "III.", text: "He helps you <strong>start</strong> movements and actions." }
+    storyFunctions: [
+      { label: "I.", text: `He turns repeated actions into <strong>habits</strong>.` },
+      { label: "II.", text: `He delivers <strong>rewards</strong> when something feels good.` },
+      { label: "III.", text: `He helps you <strong>start</strong> movements and actions.` }
     ],
-    everyday: "When you find yourself reaching for your phone before you even realize it, when a new habit finally feels easy, when you crave something you've enjoyed before, the Habit Forge is the one keeping the pattern alive.",
+    everyday: `When you find yourself reaching for your phone before you even realize it, when a new habit finally feels easy, when you crave something you've enjoyed before, the Habit Forge is the one keeping the pattern alive.`,
     friends: [
       { name: "The Commander", color: "#5c6bc0", bond: "negotiates with him" },
       { name: "The Relay", color: "#f57c00", bond: "passes signals to him" },
       { name: "The Choreographer", color: "#388e3c", bond: "shares movement skills" }
+    ],
+        connections: [
+      { name: "Prefrontal Cortex", color: "#5c6bc0" }, { name: "Thalamus", color: "#f57c00" },
+      { name: "Brainstem", color: "#5d4037" }, { name: "Cerebellum", color: "#388e3c" }
     ]
   }
 };
@@ -1390,7 +1681,7 @@ window.toggleTransparency = function() {
     });
   });
   document.getElementById('transparency-btn').textContent =
-    cortexTransparent ? 'Outer Layers: Transparent' : 'Outer Layers: Solid';
+    cortexTransparent ? 'Cortex: Transparent' : 'Cortex: Solid';
 };
 
 window.toggleAutoRotate = function() {
@@ -1489,8 +1780,13 @@ function onPointerMove(event) {
           m.material.emissiveIntensity = 0.25;
         });
       }
-      hoverName.textContent = REGIONS[key].name;
-      hoverSub.textContent = REGIONS[key].realName + ' · ' + REGIONS[key].tagline;
+      if (currentMode === 'stories') {
+        hoverName.textContent = REGIONS[key].nickname;
+        hoverSub.textContent = REGIONS[key].name + ' · ' + REGIONS[key].tagline.split('·')[0].trim();
+      } else {
+        hoverName.textContent = REGIONS[key].name;
+        hoverSub.textContent = REGIONS[key].nickname + ' · ' + REGIONS[key].tagline.split('·')[0].trim();
+      }
       hoverLabel.classList.add('visible');
       hoverLabel.style.left = (event.clientX - rect.left + 14) + 'px';
       hoverLabel.style.top = (event.clientY - rect.top - 30) + 'px';
@@ -1589,7 +1885,89 @@ function buildDetailPanel(r) {
   const panel = document.getElementById('detail-panel');
   const empty = document.getElementById('detail-empty');
 
-  const functionsHTML = r.functions.map(f =>
+  if (currentMode === 'stories') {
+    buildStoryPanel(r, panel);
+  } else {
+    buildAnatomicalPanel(r, panel);
+  }
+
+  empty.style.display = 'none';
+  panel.classList.add('visible');
+  document.getElementById('detail-container').scrollTop = 0;
+}
+
+function buildAnatomicalPanel(r, panel) {
+  const functionTagsHTML = r.functions.map(f =>
+    `<span class="function-tag" style="border-color:${r.color}40; color:${r.color};">${f}</span>`
+  ).join('');
+
+  const connectionsHTML = r.connections.map(c =>
+    `<div class="conn-chip"><div class="conn-chip-dot" style="background:${c.color}"></div>${c.name}</div>`
+  ).join('');
+
+  let jungHTML = '';
+  if (r.jung) {
+    const codeHTML = r.jung.functions.length > 0
+      ? r.jung.functions.map(f => `<span class="function-code" style="border-color:${r.color}60">${f}</span>`).join('')
+      : '<span class="function-code" style="border-color:rgba(232,213,183,0.2); opacity:0.6">substrate</span>';
+    const rowsHTML = r.jung.rows.map(row => {
+      const typesHTML = row.types.length > 0
+        ? `<div class="jung-types-row">${row.types.map(t => `<span class="jung-type">${t}</span>`).join('')}</div>`
+        : '';
+      return `
+        <div class="jung-function-row">
+          <div class="jung-function-name">${row.code} <em>${row.name}</em></div>
+          <div class="jung-function-body">${row.body}</div>
+          ${typesHTML}
+        </div>`;
+    }).join('');
+    jungHTML = `
+      <div class="jung-section">
+        <div class="jung-label">Cognitive Function Layer — Jung × Nardi</div>
+        <div class="function-codes">${codeHTML}</div>
+        ${rowsHTML}
+        <div class="jung-caveat">Based on Dario Nardi's EEG research at UCLA (2007–2012, sample of ~60 college students). Exploratory and not yet replicated at scale. Held here as a useful working metaphor, not settled neuroscience.</div>
+      </div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="detail-color-bar" style="background: linear-gradient(90deg, ${r.color}, ${r.color}44)"></div>
+    <div class="detail-header">
+      <div class="detail-region-name">${r.name}</div>
+      <div class="detail-latin">${r.latin}</div>
+      <div class="detail-tagline" style="color:${r.color}">${r.tagline}</div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-label">Primary Functions</div>
+      <div class="function-tags">${functionTagsHTML}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="detail-section">
+      <div class="detail-section-label">What It Does</div>
+      <div class="detail-body">${r.summary}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="detail-section">
+      <div class="detail-section-label">PhD-Level Deep Dive</div>
+      <div class="detail-body" style="font-size:13.5px; line-height:1.7;">${r.phd_note}</div>
+    </div>
+    <div class="divider"></div>
+    <div class="adhd-insight">
+      <div class="adhd-label">ADHD / AuDHD Insight</div>
+      <div class="adhd-text">${r.adhd_insight}</div>
+    </div>
+    <div class="divider"></div>
+    ${jungHTML}
+    <div class="divider"></div>
+    <div class="detail-section">
+      <div class="detail-section-label">Key Connections</div>
+      <div class="connections-visual">${connectionsHTML}</div>
+    </div>
+  `;
+}
+
+function buildStoryPanel(r, panel) {
+  const functionsHTML = r.storyFunctions.map(f =>
     `<div class="function-row" style="border-left-color:${r.color};">
        <div class="function-marker" style="color:${r.color}">${f.label}</div>
        <div class="function-text">${f.text}</div>
@@ -1608,14 +1986,14 @@ function buildDetailPanel(r) {
     <div class="detail-color-bar" style="background: linear-gradient(90deg, ${r.color}, ${r.color}44)"></div>
 
     <div class="character-card" style="color:${r.color}">
-      <div class="character-name">${r.name}</div>
+      <div class="character-name">${r.nickname}</div>
       <div class="character-role" style="color:${r.color}">${r.role}</div>
-      <div class="character-also">also known as the ${r.realName}, ${r.also}</div>
+      <div class="character-also">also known as the ${r.name}, ${r.also}</div>
       <div class="opening-line" style="border-left-color:${r.color}">${r.opening}</div>
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title" style="color:${r.color}">Her Story</div>
+      <div class="detail-section-title" style="color:${r.color}">Their Story</div>
       <div class="detail-body">${r.story}</div>
     </div>
 
@@ -1639,13 +2017,10 @@ function buildDetailPanel(r) {
     <div class="divider"></div>
 
     <div class="detail-section">
-      <div class="detail-section-title" style="color:${r.color}">Who She Works With</div>
+      <div class="detail-section-title" style="color:${r.color}">Who They Work With</div>
       <div class="friends-list">${friendsHTML}</div>
     </div>
   `;
-  empty.style.display = 'none';
-  panel.classList.add('visible');
-  document.getElementById('detail-container').scrollTop = 0;
 }
 
 // ============================================
@@ -1657,12 +2032,78 @@ function animate() {
   renderer.render(scene, camera);
 }
 
+// ============================================
+// MODE TOGGLE (Anatomical <-> Inner Kingdom)
+// ============================================
+let currentMode = 'anatomical';
+
+function applyModeToStaticText() {
+  // Update all elements with data-anatomical / data-stories attributes
+  const attr = currentMode === 'stories' ? 'data-stories' : 'data-anatomical';
+  document.querySelectorAll('[data-anatomical][data-stories]').forEach(el => {
+    const val = el.getAttribute(attr);
+    if (val !== null) el.textContent = val;
+  });
+}
+
+function applyModeToWordmark() {
+  const title = document.getElementById('wordmark-title');
+  const sub = document.getElementById('wordmark-sub');
+  const section = document.getElementById('sidebar-section-label');
+  const pillCount = document.getElementById('pill-count');
+  if (currentMode === 'stories') {
+    title.textContent = 'The Inner Kingdom';
+    sub.textContent = 'Meet the Characters Inside Your Mind';
+    section.textContent = 'The Cast';
+    if (pillCount) pillCount.textContent = '15 Characters';
+  } else {
+    title.textContent = 'The Living Brain';
+    sub.textContent = '3D Interactive Neuroanatomy';
+    section.textContent = 'Navigate';
+    if (pillCount) pillCount.textContent = '15 Regions';
+  }
+}
+
+window.setMode = function(mode) {
+  if (mode !== 'anatomical' && mode !== 'stories') return;
+  currentMode = mode;
+
+  // Update body class for CSS scoping
+  document.body.classList.remove('anatomical-mode', 'stories-mode');
+  document.body.classList.add(mode + '-mode');
+
+  // Update toggle button states
+  document.getElementById('mode-anatomical').classList.toggle('active', mode === 'anatomical');
+  document.getElementById('mode-stories').classList.toggle('active', mode === 'stories');
+
+  // Swap all data-driven text
+  applyModeToStaticText();
+  applyModeToWordmark();
+
+  // Update URL without reload
+  const url = new URL(window.location);
+  url.searchParams.set('mode', mode);
+  history.replaceState({}, '', url);
+
+  // Re-render current region (if any) with new mode
+  if (activeRegionKey) {
+    buildDetailPanel(REGIONS[activeRegionKey]);
+  }
+};
+
+// Read initial mode from URL (?mode=anatomical or ?mode=stories)
+const urlParams = new URLSearchParams(window.location.search);
+const initialMode = urlParams.get('mode') === 'stories' ? 'stories' : 'anatomical';
+
 // Hide loader and start
 document.getElementById('loader').style.display = 'none';
 resizeRenderer();
 animate();
 
 window.addEventListener('resize', resizeRenderer);
+
+// Apply initial mode
+setMode(initialMode);
 
 // Initialize with amygdala selected
 setTimeout(() => selectRegion('amygdala'), 800);
